@@ -189,12 +189,16 @@ input,select { border-radius:11px; }
 :root{--hg:linear-gradient(90deg,rgba(18,10,31,.18) 0%,rgba(28,16,48,.46) 42%,rgba(248,244,255,.94) 70%,rgba(248,244,255,.98) 100%)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--hg:linear-gradient(90deg,rgba(16,13,25,.05) 0%,rgba(16,13,25,.36) 42%,rgba(16,13,25,.92) 70%,rgba(16,13,25,.96) 100%)}}
 :root[data-theme="dark"]{--hg:linear-gradient(90deg,rgba(16,13,25,.05) 0%,rgba(16,13,25,.36) 42%,rgba(16,13,25,.92) 70%,rgba(16,13,25,.96) 100%)}
-.hero > .heroimg{position:absolute;inset:-4%;width:auto;z-index:0;background:var(--himg,url("../images/hero-1.jpg")) left center/cover no-repeat;animation:kenb 30s ease-in-out infinite alternate;will-change:transform;pointer-events:none}
+.hero > .heroimg{position:absolute;inset:-4%;width:auto;z-index:0;background:url("../images/hero-1-bg.jpg") left center/cover no-repeat;overflow:hidden;pointer-events:none}
 .heroimg::after{content:"";position:absolute;inset:0;background:var(--hg)}
 .hero::after{content:"";position:absolute;left:4%;bottom:6%;width:34%;height:44%;background:radial-gradient(closest-side,rgba(167,139,250,.38),transparent);filter:blur(8px);animation:glow 6s ease-in-out infinite;z-index:0;pointer-events:none}
 @keyframes kenb{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.1) translate3d(-1.5%,-1%,0)}}
 @keyframes glow{0%,100%{opacity:.3;transform:scale(.95)}50%{opacity:.85;transform:scale(1.08)}}
 @media(prefers-reduced-motion:reduce){.hero > .heroimg,.hero::after{animation:none}}
+.herochar{position:absolute;inset:0;background:url("../images/hero-1.jpg") left center/cover no-repeat;-webkit-mask:url("../images/hero-1-mask.png") left center/cover no-repeat;mask:url("../images/hero-1-mask.png") left center/cover no-repeat;transform-origin:30% 100%;filter:url(#hair);animation:sway 7s ease-in-out infinite alternate,breath 4.2s ease-in-out infinite;will-change:translate,rotate,scale}
+@keyframes sway{from{translate:-1.1% 0;rotate:-.8deg}to{translate:1.1% -.5%;rotate:.8deg}}
+@keyframes breath{0%,100%{scale:1}50%{scale:1.022}}
+@media(prefers-reduced-motion:reduce){.herochar{animation:none;filter:none}}
 #dash{display:none}
 .dsh h2{margin:0}
 .stg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
