@@ -159,6 +159,6 @@ option{background:var(--deep);color:var(--ink)}
 .heroimg::after{display:none}
 :root:root:root .tag,
 :root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
-:root:root:root h1{text-shadow:4px 4px 0 #000}
-:root:root:root .pool{text-shadow:4px 4px 0 #000}
-:root:root:root .prize span{text-shadow:2px 2px 0 #000}
+:root:root:root h1{color:#f4e8c8;text-shadow:6px 6px 0 #000}
+:root:root:root .pool{color:#f4e8c8;text-shadow:6px 6px 0 #000}
+:root:root:root .prize span{color:#f4e8c8;text-shadow:4px 4px 0 #000}
