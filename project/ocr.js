@@ -49,8 +49,21 @@ async function analyze(engine,opt){
     var intra=gaps.length?Math.min.apply(null,gaps):0,cur=[rows[0]],groups=[];
     for(var i=1;i<rows.length;i++){if(gaps[i-1]>intra*1.25){groups.push(cur);cur=[]}cur.push(rows[i])}
     groups.push(cur);
-    groups.forEach(function(g){
-      if(g.length!=2)warn.push('Satu blok tim punya '+g.length+' baris terbaca (seharusnya 2), cek hasilnya.');
+        groups.forEach(function(g,gi){
+      /* kotak tim selalu 2 baris x 2 kolom: bila hanya 1 baris terbaca, buat baris yang hilang */
+      if(g.length==1&&intra>0){
+        var prev=groups[gi-1],next=groups[gi+1];
+        var dPrev=prev?g[0]-prev[prev.length-1]:1e9,dNext=next?next[0]-g[0]:1e9;
+        /* baris hilang ada di sisi yang jaraknya ke kotak tetangga lebih besar dari jarak antar-kotak */
+        var gap=Math.max(dPrev,dNext);
+        if(dNext>=dPrev)g=[g[0],g[0]+intra];else g=[g[0]-intra,g[0]];
+        warn.push('Satu baris pemain tidak terdeteksi, posisinya diperkirakan otomatis. Cek angka kill tim ini.')}
+      else if(g.length>2){
+        /* lebih dari 2 baris: kemungkinan ada baris palsu, ambil dua yang jaraknya paling mendekati jarak normal */
+        var best=[g[0],g[1]],bd=1e9;
+        for(var a=0;a<g.length;a++)for(var c2=a+1;c2<g.length;c2++){var dd=Math.abs((g[c2]-g[a])-intra);if(dd<bd){bd=dd;best=[g[a],g[c2]]}}
+        g=best;warn.push('Ada baris tambahan yang diabaikan pada satu kotak tim.')}
+      else if(g.length==0)return;
       blocks.push({pair:pr,rows:g,pi:pi})})});
   if(!blocks.length)return{teams:[],notes:notes,error:'Blok tim tidak ditemukan.'};
   /* baca angka kill tiap sel */
