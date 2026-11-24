@@ -169,3 +169,6 @@ option{background:var(--deep);color:var(--ink)}
 :root:root:root h1,
 :root:root:root .pool{text-shadow:4px 4px 0 #000}
 :root:root:root .prize span{text-shadow:2px 2px 0 #000}
+/* karakter di kiri, di luar panel biru */
+.hero > .heroimg{inset:-4% auto -4% -4%;width:44%;border-right:4px solid var(--cr)}
+.heroimg::before,.heroimg::after{display:none}
