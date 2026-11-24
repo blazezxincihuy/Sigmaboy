@@ -174,13 +174,8 @@ input,select { border-radius:11px; }
 .amc h2{margin:0}
 .aer{color:var(--warn);font-size:13px;min-height:16px}
 
-/* logo tim, efek suara */
-.r4{grid-template-columns:28px 36px 1fr 1fr}
-.lgw{position:relative;width:34px;height:34px}
-.lg{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px dashed var(--line);background:var(--soft) center/cover no-repeat;cursor:pointer;color:var(--mut);font-size:16px;overflow:hidden}
-.lg input{display:none}
-.lgx{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;border:0;background:var(--warn);color:#fff;font-size:10px;line-height:16px;padding:0;cursor:pointer}
-.lgi{width:22px;height:22px;border-radius:50%;object-fit:cover;flex:none;background:var(--soft);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--mut);font-style:normal}
+/* daftar tim, efek suara */
+.r4{grid-template-columns:28px 1fr 1fr}
 .lbl .nm{display:flex;align-items:center;gap:7px;min-width:0}
 .lbl .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sndb{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:99px;padding:3px 9px;font-size:13px;cursor:pointer;margin-left:8px}
@@ -206,7 +201,7 @@ input,select { border-radius:11px; }
 .stt b{display:block;font-size:21px;line-height:1.2}
 .stt span{font-size:11px;color:var(--mut)}
 .dh{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:16px 0 6px;font-weight:800}
-.pr{display:grid;grid-template-columns:18px 22px 1fr auto;gap:4px 8px;align-items:center;font-size:14px;margin:9px 0}
+.pr{display:grid;grid-template-columns:18px 1fr auto;gap:4px 8px;align-items:center;font-size:14px;margin:9px 0}
 .pr .no{text-align:center;font-weight:800;color:var(--acc)}
 .pr .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .pr .pt{font-weight:800}
@@ -229,11 +224,7 @@ html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
 .lenis.lenis-stopped{overflow:hidden}
-.mbtn{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--acc);color:#fff;font-size:20px;line-height:1;display:grid;place-items:center;box-shadow:0 8px 22px rgba(60,36,95,.28);z-index:30;cursor:pointer;padding:0}
-.mpan{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100vw - 32px));z-index:30;border-radius:14px;overflow:hidden;background:var(--card);border:1px solid var(--line);box-shadow:0 14px 36px rgba(40,25,65,.25);visibility:hidden;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
-.mpan.on{visibility:visible;opacity:1;pointer-events:auto;transform:none}
-.mpan iframe{display:block;border:0}
-
+.mbtn{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:50px;height:50px;border-radius:50%;border:0;background:#25d366;color:#fff;text-decoration:none;font-size:20px;line-height:1;display:grid;place-items:center;box-shadow:0 8px 22px rgba(60,36,95,.28);z-index:30;cursor:pointer;padding:0}
 /* v5: rapikan header desktop */
 .hero{overflow:hidden}
 .hero > .heroimg{inset:-7%}
@@ -241,3 +232,41 @@ html.lenis,html.lenis body{height:auto}
 @media(max-width:1023px){.hero{padding-top:52px}}
 
 .hero,.hero.cu,:root:not([data-theme="light"]) .hero,:root:not([data-theme="light"]) .hero.cu,:root[data-theme="dark"] .hero,:root[data-theme="dark"] .hero.cu{background-image:none!important}
+
+/* v6: tombol animasi, WhatsApp, isi tim massal, scan OCR */
+.hero > .animbtn{position:absolute;top:12px;left:12px;width:auto;z-index:3;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 12px inherit;font-family:inherit;padding:7px 12px;border-radius:99px;cursor:pointer;opacity:.92}
+@media(min-width:1024px){.hero > .animbtn{top:16px;left:20px}}
+.noanim *,.noanim *::before,.noanim *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.noanim .herochar{filter:none!important}
+.noanim .hero .spk{opacity:.4}
+.noanim .hero::after{opacity:.5}
+.bulk{display:grid;gap:8px}
+.bulk textarea{width:100%;min-height:120px;resize:vertical;font:inherit;font-size:14px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.bulk .acts{margin:0;flex-wrap:wrap}
+.bulk label.m{display:flex;gap:6px;align-items:center}
+.pv{display:flex;flex-wrap:wrap;gap:6px}
+.pv span{border:1px solid var(--line);background:var(--soft);border-radius:99px;padding:3px 10px;font-size:12px}
+.pv span b{color:var(--acc);margin-right:4px}
+.ocrbar{height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.ocrbar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+.ocr{display:grid;gap:12px}
+.ocr h3{margin:0;font-size:15px}
+.ocrt{display:grid;gap:6px}
+.ocrr{display:grid;grid-template-columns:38px minmax(0,1fr) 48px 44px;gap:6px 8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.ocrr:last-child{border:0}
+.ocrr input,.ocrr select{min-width:0;width:100%}
+.ocrr .pl{display:grid;grid-column:2/-1;grid-template-columns:repeat(4,1fr);gap:4px}
+.ocrr .pl input{padding:5px 6px;text-align:center}
+.ocrr .pl.nm4{grid-template-columns:repeat(2,1fr)}
+.ocrr .tk{font-weight:800;text-align:center}
+.ocrr .pt{font-weight:800;text-align:right}
+.ocrr .fl{grid-column:2/-1;color:var(--warn);font-size:11.5px}
+.ocrr.bad{background:rgba(220,60,60,.07)}
+.ocrh{font-size:11px;color:var(--mut);display:grid;grid-template-columns:38px minmax(0,1fr) 48px 44px;gap:8px;font-weight:700}
+.ocrsum{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.55}
+.ocrsum ul{margin:4px 0 0;padding-left:18px}
+.ocrinfo{font-size:12.5px;color:var(--mut);line-height:1.6}
+.ocrinfo b{color:var(--ink)}
+.ocrr [data-op]{padding:8px 2px;text-align:center;-moz-appearance:textfield}
+.ocrr [data-op]::-webkit-inner-spin-button{display:none}
+.ocrr [data-on]{padding:8px 10px}
