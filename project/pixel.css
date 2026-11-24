@@ -155,3 +155,7 @@ option{background:var(--deep);color:var(--ink)}
 .aer{font-family:var(--fb)}
 
 @media(prefers-reduced-motion:reduce){.herochar,.hero .spk{animation:none!important}}
+/* hapus overlay biru di hero */
+.heroimg::after{display:none}
+:root:root:root .tag,
+:root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
