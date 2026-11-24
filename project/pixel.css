@@ -155,10 +155,17 @@ option{background:var(--deep);color:var(--ink)}
 .aer{font-family:var(--fb)}
 
 @media(prefers-reduced-motion:reduce){.herochar,.hero .spk{animation:none!important}}
-/* hero: tanpa overlay biru + teks berbayangan */
-.heroimg::after{display:none}
+/* hero: overlay biru gaya pixel (dither) */
+.heroimg::before{content:"";position:absolute;top:0;bottom:0;left:38%;width:24px;z-index:2;pointer-events:none;
+  background:
+    conic-gradient(transparent 25%,rgba(42,32,147,.85) 0) 16px 0/8px 8px repeat-y,
+    repeating-conic-gradient(rgba(42,32,147,.85) 0 25%,transparent 0 50%) 8px 0/8px 8px repeat-y,
+    conic-gradient(rgba(42,32,147,.85) 25%,transparent 0) 0 0/8px 8px repeat-y}
+.heroimg::after{content:"";position:absolute;top:0;bottom:0;left:calc(38% + 24px);right:0;z-index:2;background:rgba(42,32,147,.85)}
+
+/* teks header berbayangan */
 :root:root:root .tag,
 :root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
-:root:root:root h1{color:#f4e8c8;text-shadow:6px 6px 0 #000}
-:root:root:root .pool{color:#f4e8c8;text-shadow:6px 6px 0 #000}
-:root:root:root .prize span{color:#f4e8c8;text-shadow:4px 4px 0 #000}
+:root:root:root h1,
+:root:root:root .pool{text-shadow:4px 4px 0 #000}
+:root:root:root .prize span{text-shadow:2px 2px 0 #000}
