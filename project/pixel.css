@@ -155,7 +155,10 @@ option{background:var(--deep);color:var(--ink)}
 .aer{font-family:var(--fb)}
 
 @media(prefers-reduced-motion:reduce){.herochar,.hero .spk{animation:none!important}}
-/* hapus overlay biru di hero */
+/* hero: tanpa overlay biru + teks berbayangan */
 .heroimg::after{display:none}
 :root:root:root .tag,
 :root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
+:root:root:root h1{text-shadow:4px 4px 0 #000}
+:root:root:root .pool{text-shadow:4px 4px 0 #000}
+:root:root:root .prize span{text-shadow:2px 2px 0 #000}
