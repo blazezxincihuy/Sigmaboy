@@ -163,12 +163,3 @@ option{background:var(--deep);color:var(--ink)}
     conic-gradient(rgba(42,32,147,.85) 25%,transparent 0) 0 0/8px 8px repeat-y}
 .heroimg::after{content:"";position:absolute;top:0;bottom:0;left:calc(38% + 24px);right:0;z-index:2;background:rgba(42,32,147,.85)}
 
-/* teks header berbayangan */
-:root:root:root .tag,
-:root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
-:root:root:root h1,
-:root:root:root .pool{text-shadow:4px 4px 0 #000}
-:root:root:root .prize span{text-shadow:2px 2px 0 #000}
-/* karakter di kiri, di luar panel biru */
-.hero > .heroimg{inset:-4% auto -4% -4%;width:44%;border-right:4px solid var(--cr)}
-.heroimg::before,.heroimg::after{display:none}
