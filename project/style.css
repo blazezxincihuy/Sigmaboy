@@ -270,3 +270,7 @@ html.lenis,html.lenis body{height:auto}
 .ocrr [data-op]{padding:8px 2px;text-align:center;-moz-appearance:textfield}
 .ocrr [data-op]::-webkit-inner-spin-button{display:none}
 .ocrr [data-on]{padding:8px 10px}
+/* tombol hapus poin */
+.r3{grid-template-columns:1fr 84px 64px 44px 34px}
+.clr1{padding:4px 0;width:30px;height:30px;line-height:1;font-size:16px}
+.ocrr .r3{grid-template-columns:none}
