@@ -436,4 +436,19 @@ async function dlBoard(){
     var a=document.createElement('a'),u=URL.createObjectURL(b),sg=TT().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'klasemen';
     a.href=u;a.download='klasemen-'+sg+'-'+ALL.cur.replace(/\D/g,'')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);toast('Gambar klasemen diunduh (1600×1414)')},'image/png')}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#dlimg');if(b)dlBoard()});
+/* ---- hapus poin: per tim, per match, atau semua match di sesi ini ---- */
+var clrConf='';
+function clearTeamPoints(id){
+  if(S.res[cur]){delete S.res[cur][id]}
+  save();render();toast('Poin tim dihapus dari Match '+(cur+1))}
+function clearMatchPoints(){S.res[cur]={};save();render();toast('Semua poin Match '+(cur+1)+' dihapus')}
+function clearAllPoints(){S.res={};save();render();toast('Poin semua match dihapus')}
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('button');if(!b)return;
+  if(b.dataset.clr!==undefined){clearTeamPoints(b.dataset.clr);return}
+  if(b.id=='clrm'||b.id=='clra'){
+    var k=b.id=='clrm'?'m':'a';
+    if(clrConf!==k){clrConf=k;render();setTimeout(function(){if(clrConf==k){clrConf='';render()}},4000);return}   /* klik pertama = minta konfirmasi */
+    clrConf='';k=='m'?clearMatchPoints():clearAllPoints()}
+});
 render();
