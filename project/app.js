@@ -26,12 +26,12 @@ function nav(){
   document.getElementById('nav').innerHTML=T.map(function(x){return'<button role="tab" aria-selected="'+(tab==x[0])+'" data-t="'+x[0]+'">'+x[1]+'</button>'}).join('')}
 function viewKlasemen(){
   var rows=calc(),done=Object.keys(S.res).filter(function(m){return Object.keys(S.res[m]).length}).length;
-  var h='<div class="card lbc"><div class="lbh"><h2>Klasemen · '+ALL.cur+'</h2><span class="m">'+done+'/'+S.maps.length+' match<button class="sndb" id="sndt" type="button" aria-label="Efek suara" title="Efek suara">'+(SND?'\ud83d\udd0a':'\ud83d\udd07')+'</button></span></div>';
+  var h='<div class="card lbc"><div class="lbh"><h2>'+esc(TT())+'<small class="m" style="display:block;font-weight:500;font-size:12px">Klasemen · Sesi '+ALL.cur+' WIB</small></h2><span class="m">'+done+'/'+S.maps.length+' match<button class="sndb" id="sndt" type="button" aria-label="Efek suara" title="Efek suara">'+(SND?'\ud83d\udd0a':'\ud83d\udd07')+'</button></span></div>';
   if(!rows.length)h+='<div class="empty">Belum ada tim. Isi nama tim di tab Tim.</div>';
   else{h+='<ol class="lbl">';
     rows.forEach(function(r,i){h+='<li class="'+(i<3?'top':'')+'"><span class="no">'+(i+1)+'</span><span class="nm"><span class="nt">'+esc(r.t.n)+(r.t.k?'<small>'+esc(r.t.k)+'</small>':'')+'</span></span><span class="kl">'+r.k+' K'+(r.b?' · '+r.b+'B':'')+'</span><span class="pt">'+r.pts+'</span></li>'});
     h+='</ol>'}
-  h+='<div class="acts"><button class="btn" id="cp">Salin untuk WhatsApp</button></div></div>';
+  h+='<div class="acts"><button class="btn" id="cp">Salin untuk WhatsApp</button><button class="btn ghost" id="dlimg" type="button">Unduh gambar (1600×1414)</button></div></div>';
   return h}
 function viewMatch(){
   var res=S.res[cur]||{},used={};
@@ -61,7 +61,7 @@ function viewAtur(){
   else h+='<div class="card"><h2>Hapus data</h2><p class="m">Menghapus semua tim, match, dan hasil di semua sesi, lalu mengulang turnamen dari awal.</p><button class="btn danger" id="rst">Reset turnamen</button></div>';
   return h}
 function sesNav(){document.getElementById('sch').innerHTML=SESI.map(function(j){var d=ALL.d[j],has=d&&Object.keys(d.res).some(function(m){return Object.keys(d.res[m]).length});return'<button class="chip" aria-pressed="'+(j==ALL.cur)+'" data-s="'+j+'">'+j+(has?' •':'')+'</button>'}).join('')}
-function render(){if(!ADM&&tab!='klasemen')tab='klasemen';chk();wab();requestAnimationFrame(fx);sesNav();nav();hm();ttl();adb();var v={klasemen:viewKlasemen,match:viewMatch,tim:viewTim,atur:viewAtur}[tab];document.getElementById('main').innerHTML=v();if(tab=='atur'){try{var q=localStorage.getItem(HK);if(q)setHero(q)}catch(e){}}}
+function render(){if(!ADM&&tab!='klasemen')tab='klasemen';chk();wab();requestAnimationFrame(fx);sesNav();nav();hm();ttl();adb();var v={klasemen:viewKlasemen,match:viewMatch,tim:viewTim,atur:viewAtur}[tab];document.getElementById('main').innerHTML=(ADM||created())?v():'<div class="card"><h2>Turnamen belum dibuat</h2><p class="m">Klasemen dan jam sesi akan tampil di sini setelah admin membuat turnamen.</p></div>';pubvis();if(tab=='atur'){try{var q=localStorage.getItem(HK);if(q)setHero(q)}catch(e){}}}
 function hm(){var e=document.getElementById('hm'),t=document.getElementById('tg');if(e)e.textContent=(ALL.desc||'').trim()||'Mode squad, '+S.teams.length+' slot, main event setiap hari 14.00–01.00 WIB';if(t)t.textContent=(ALL.slogan||'').trim()||'Good Game, Good Friend ✦'}
 function setHero(u){var h=document.getElementById('hero'),t=document.getElementById('thm');
   if(u){h.style.setProperty('--himg','url("'+u+'")');h.classList.add('cu');if(t)t.style.backgroundImage='url("'+u+'")'}
@@ -219,27 +219,29 @@ function splitTeams(t){
   var L=t.split('\n').map(function(x){return x.trim()}).filter(Boolean);
   if(L.length==1){
     if((L[0].match(/(?:^|\s)\d{1,2}[\.\)]\s/g)||[]).length>=2)L=L[0].split(/\s*(?:^|\s)\d{1,2}[\.\)]\s+/).filter(Boolean);
-    else if(/[,;\t|]/.test(L[0]))L=L[0].split(/\s*[,;\t|]\s*/)}
+    else if(/[,;\t]/.test(L[0]))L=L[0].split(/\s*[,;\t]\s*/)}
   var num=L.length>1&&L.every(function(x){return/^\(?\d{1,2}\s+\S/.test(x)});
   var seen={},out=[];
   L.forEach(function(x){
     x=x.replace(/^\(?\d{1,2}\s*[\.\)\]:]\s*/,'').replace(/^[-•*·]\s+/,'');
     if(num)x=x.replace(/^\(?\d{1,2}\s+/,'');
-    x=x.replace(/\s+/g,' ').trim().slice(0,40);if(!x)return;
-    var k=x.toLowerCase();if(seen[k])return;seen[k]=1;out.push(x)});
+    /* format: namatim | nickname   (pemisah | atau / atau //); tanpa pemisah = nama tim saja */
+    var m=x.match(/^(.*?)\s*(?:\/\/|\||\/)\s*(.*)$/),n=m?m[1]:x,k=m?m[2].split(/\s*(?:\/\/|\||\/)\s*/)[0]:'';
+    n=n.replace(/\s+/g,' ').trim().slice(0,40);k=k.replace(/\s+/g,' ').trim().slice(0,40);if(!n)return;
+    var key=n.toLowerCase();if(seen[key])return;seen[key]=1;out.push({n:n,k:k})});
   return out}
 function bulkPv(){var n=splitTeams(bulkTxt);
   if(!n.length)return'<span class="m" style="border:0;background:none">Tempel daftar tim di atas, hasil pemisahan tampil di sini.</span>';
-  return n.slice(0,30).map(function(x,i){return'<span><b>'+(i+1)+'</b>'+esc(x)+'</span>'}).join('')+(n.length>30?'<span class="m">+'+(n.length-30)+' lagi (maks. 30 tim)</span>':'')}
-function bulkCard(){return'<div class="card"><h2>Isi nama tim sekaligus</h2><div class="bulk"><textarea id="bulk" placeholder="Tempel daftar tim di sini, satu tim per baris.&#10;Nomor urut (1. / 2) / 3 -), tanda koma, titik koma, atau tab dipisah otomatis.">'+esc(bulkTxt)+'</textarea><div class="pv" id="bulkpv">'+bulkPv()+'</div><label class="m"><input type="checkbox" id="bulkrep" style="width:auto"'+(bulkRep?' checked':'')+'> Ganti semua nama yang sudah ada (bukan hanya mengisi slot kosong)</label><div class="acts"><button class="btn" id="bulkgo" type="button">Isi ke daftar tim</button><button class="btn ghost" id="bulkclr" type="button">Kosongkan semua nama</button></div></div></div>'}
+  return n.slice(0,30).map(function(x,i){return'<span><b>'+(i+1)+'</b>'+esc(x.n)+(x.k?'<small class="m"> · '+esc(x.k)+'</small>':'')+'</span>'}).join('')+(n.length>30?'<span class="m">+'+(n.length-30)+' lagi (maks. 30 tim)</span>':'')}
+function bulkCard(){return'<div class="card"><h2>Isi nama tim sekaligus</h2><div class="bulk"><textarea id="bulk" placeholder="Satu tim per baris, format: namatim | nickname&#10;Pemisah boleh | atau / atau //&#10;team alpha | alphaplayer&#10;team bravo / bravoplayer&#10;team charlie // charlieplayer&#10;Tanpa pemisah = nama tim saja. Nomor urut (1. 2) dst) dibuang otomatis.">'+esc(bulkTxt)+'</textarea><div class="pv" id="bulkpv">'+bulkPv()+'</div><label class="m"><input type="checkbox" id="bulkrep" style="width:auto"'+(bulkRep?' checked':'')+'> Ganti semua nama yang sudah ada (bukan hanya mengisi slot kosong)</label><div class="acts"><button class="btn" id="bulkgo" type="button">Isi ke daftar tim</button><button class="btn ghost" id="bulkclr" type="button">Kosongkan semua nama</button></div></div></div>'}
 function growTeams(len){while(S.teams.length<len&&S.teams.length<30)S.teams.push({id:Date.now()+S.teams.length,n:'',k:''});while(S.pts.length<S.teams.length)S.pts.push(0)}
 function bulkApply(){
   var n=splitTeams(bulkTxt);if(!n.length){toast('Belum ada nama untuk diisi');return}
   var cut=0;if(n.length>30){cut=n.length-30;n=n.slice(0,30)}
   var slots=[];
-  if(bulkRep){S.teams.forEach(function(t){t.n=''});growTeams(n.length);S.teams.forEach(function(_,i){slots.push(i)})}
+  if(bulkRep){S.teams.forEach(function(t){t.n='';t.k=''});growTeams(n.length);S.teams.forEach(function(_,i){slots.push(i)})}
   else{S.teams.forEach(function(t,i){if(!t.n.trim())slots.push(i)});var need=n.length-slots.length;if(need>0){var s0=S.teams.length;growTeams(s0+need);for(var i=s0;i<S.teams.length;i++)slots.push(i)}}
-  var used=0;n.forEach(function(nm,i){if(slots[i]===undefined)return;S.teams[slots[i]].n=nm;used++});
+  var used=0;n.forEach(function(it,i){if(slots[i]===undefined)return;S.teams[slots[i]].n=it.n;if(it.k)S.teams[slots[i]].k=it.k;used++});
   bulkTxt='';save();render();toast(used+' tim terisi'+(cut?', '+cut+' dilewati (maks. 30)':'')+(used<n.length?', '+(n.length-used)+' tidak muat':''))}
 /* logo tim sudah dihapus: bersihkan sisa data lama */
 function nologo(){try{Object.keys(ALL.d||{}).forEach(function(k){(ALL.d[k].teams||[]).forEach(function(t){delete t.l})})}catch(e){}}
@@ -275,13 +277,13 @@ function ocrSum(){
   if(bp&&bp.k>0)L.push('Kill pemain tertinggi: '+bp.n+' ('+bp.k+' kill)');
   L.push('Total kill match: '+tk+' dari '+rows.length+' tim (rata-rata '+(tk/rows.length).toFixed(1)+' per tim)');
   var z=rows.filter(function(r){return r.k==0}).length;if(z)L.push(z+' tim tanpa kill');
-  return{html:'<ul>'+L.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>',text:'*RINGKASAN MATCH '+(cur+1)+' — '+TT()+' '+ALL.cur+' WIB*\n'+L.join('\n')}}
+  return{html:'<ul>'+L.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>',text:'*RINGKASAN MATCH '+(cur+1)+' — '+TT()+' '+ALL.cur+' WIB*\n'+L.join('\n')+'\n\nTeam | Place | Kill | Pts\n'+rows.map(function(r){return r.n+' | '+r.p+' | '+r.k+' | '+r.pt}).join('\n')}}
 function ocrPanel(){
   var R=OCR,h='<div class="ocr" id="ocrp">',tot=R.teams.length,pl=0,ok=0,cf=[],chk2=0;
   R.teams.forEach(function(t){pl+=t.players.length;t.players.forEach(function(p){if(p.k!==null&&p.k!==undefined)ok++});if(R.engine=='ocr')cf.push(t.conf);if(t.flags&&t.flags.length)chk2++});
   var avg=cf.length?Math.round(cf.reduce(function(a,b){return a+b},0)/cf.length):null;
   h+='<div><h3>Informasi yang terdeteksi</h3><div class="ocrinfo">Mesin: <b>'+(R.engine=='ai'?'AI vision':'OCR di browser')+'</b> · Gambar: <b>'+R.files+'</b> file'+(R.dim?' ('+R.dim+')':'')+'<br>Tim terdeteksi: <b>'+tot+'</b> · Pemain terbaca: <b>'+ok+'/'+pl+'</b>'+(R.cols?' · Kolom pemain: <b>'+R.cols+'</b>':'')+(avg!==null?' · Keyakinan angka: <b>'+avg+'%</b>':'')+'<br>'+(chk2?'<b style="color:var(--warn)">'+chk2+' tim perlu dicek</b> (ada angka kosong atau kurang yakin).':'Semua angka terbaca jelas.')+(R.warn&&R.warn.length?'<br>'+esc(R.warn.filter(function(x,i,a){return a.indexOf(x)==i}).join(' ')):'')+'<br>Peringkat dibaca dari urutan tim. Nama di baris adalah pemain kiri-atas tiap tim (perwakilan); ubah bila perlu.</div></div>';
-  h+='<div><h3>Hasil per tim</h3><div class="ocrh"><span>#</span><span>Perwakilan / tim</span><span>Kill</span><span style="text-align:right">Poin</span></div><div class="ocrt">';
+  h+='<div><h3>Hasil per tim</h3><div class="ocrh"><span>Place</span><span>Team</span><span>Kill</span><span style="text-align:right">Pts</span></div><div class="ocrt">';
   var used={};R.teams.forEach(function(t){if(t.tid>0)used[t.tid]=(used[t.tid]||0)+1});
   R.teams.forEach(function(t,i){
     var dup=t.tid>0&&used[t.tid]>1,pick=t.tid==-2,bad=dup||pick||(t.flags&&t.flags.length);
@@ -342,7 +344,7 @@ document.addEventListener('click',function(e){
   if(i=='animb'){ANIM=!ANIM;try{localStorage.setItem('zhxin-ft-anim',ANIM?'1':'0')}catch(x){}applyAnim();toast(ANIM?'Animasi dinyalakan':'Animasi dimatikan');return}
   if(i=='bulkgo'){bulkApply();return}
   if(i=='bulkclr'){if(!cconf){cconf=true;toast('Tekan sekali lagi untuk mengosongkan semua nama');setTimeout(function(){cconf=false},4000);return}
-    cconf=false;S.teams.forEach(function(t){t.n=''});save();render();toast('Semua nama tim dikosongkan');return}
+    cconf=false;S.teams.forEach(function(t){t.n='';t.k=''});save();render();toast('Semua nama tim dikosongkan');return}
   if(i=='scan'){scan();return}
   if(i=='ocrap'){ocrApply();return}
   if(i=='ocrx'){OCR=null;scmsg='';render();return}
@@ -364,4 +366,73 @@ document.addEventListener('change',function(e){
   if(OCR&&el.dataset.os!==undefined){OCR.teams[+el.dataset.os].tid=+el.value;render()}
 });
 applyAnim();
+
+/* ---- tampilan publik: klasemen & jam tampil setelah admin membuat turnamen ---- */
+function created(){if((ALL.title||'').trim())return true;return Object.keys(ALL.d||{}).some(function(k){var d=ALL.d[k];return d&&((d.teams||[]).some(function(t){return(t.n||'').trim()})||Object.keys(d.res||{}).some(function(m){return Object.keys(d.res[m]).length}))})}
+function pubvis(){var v=ADM||created(),a=document.querySelector('.sesw'),d=document.getElementById('dash');if(a)a.style.display=v?'':'none';if(d)d.style.display=v?'':'none'}
+/* ---- gambar klasemen 1600x1414 (semua match digabung) ---- */
+var BW=1600,BH=1414;
+function fmtDate(){try{return new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}catch(e){return''}}
+async function boardCanvas(){
+  try{await Promise.all([document.fonts.load('700 20px "Space Grotesk"'),document.fonts.load('500 14px "Space Grotesk"')])}catch(e){}
+  var F='"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif',rows=calc(),n=S.maps.length,c=document.createElement('canvas');c.width=BW;c.height=BH;
+  var g=c.getContext('2d');g.textBaseline='middle';
+  var hasM=S.maps.map(function(_,m){return S.res[m]&&Object.keys(S.res[m]).length?1:0}),played=hasM.some(function(x){return x});
+  function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+  function sp(t,x,y,s,al){t=String(t);var w=0,i,ws=[];for(i=0;i<t.length;i++){ws[i]=g.measureText(t.charAt(i)).width;w+=ws[i]+(i<t.length-1?s:0)}
+    var cx=al=='center'?x-w/2:al=='right'?x-w:x;g.textAlign='left';for(i=0;i<t.length;i++){g.fillText(t.charAt(i),cx,y);cx+=ws[i]+s}}
+  function fit(t,x,y,size,wt,maxW,al,col){var z=size;g.font=wt+' '+z+'px '+F;while(z>9&&g.measureText(t).width>maxW){z-=1;g.font=wt+' '+z+'px '+F}g.fillStyle=col;g.textAlign=al;g.fillText(t,x,y)}
+  function line(y,col){g.fillStyle=col;g.fillRect(0,y,BW,1)}
+  rr(0,0,BW,BH,28);g.clip();g.fillStyle='#0f0a07';g.fillRect(0,0,BW,BH);
+  /* header */
+  var gr=g.createLinearGradient(0,0,BW,186);gr.addColorStop(0,'#7f1d24');gr.addColorStop(.55,'#b8451a');gr.addColorStop(1,'#f97316');g.fillStyle=gr;g.fillRect(0,0,BW,186);line(186,'#4a2a18');
+  g.fillStyle='#f97316';g.fillRect(765,0,70,4);
+  g.fillStyle='#fff';g.font='700 15px '+F;sp('TOURNAMENT LEADERBOARD',800,42,4.2,'center');
+  fit(TT(),800,87,38,'700',1300,'center','#fff');
+  var dt=fmtDate()+' · Sesi '+ALL.cur+' WIB';g.font='500 15px '+F;var pw=g.measureText(dt).width+34;
+  rr(800-pw/2,124,pw,34,8);g.fillStyle='rgba(70,22,10,.6)';g.fill();g.strokeStyle='rgba(255,255,255,.1)';g.lineWidth=1;g.stroke();
+  g.fillStyle='#fff';g.textAlign='center';g.fillText(dt,800,141);
+  /* champion */
+  var cg=g.createLinearGradient(0,0,BW*.7,0);cg.addColorStop(0,'#2b100c');cg.addColorStop(1,'#100b08');g.fillStyle=cg;g.fillRect(0,187,BW,133);line(320,'#241812');
+  g.strokeStyle='#f97316';g.lineWidth=2.5;g.lineJoin='round';g.beginPath();g.moveTo(60,236);g.bezierCurveTo(66,244,74,248,74,258);g.bezierCurveTo(74,266,68,272,60,272);g.bezierCurveTo(52,272,46,266,46,258);g.bezierCurveTo(46,252,50,248,53,246);g.bezierCurveTo(54,250,56,252,58,252);g.bezierCurveTo(57,246,58,240,60,236);g.closePath();g.stroke();
+  g.fillStyle='#f97316';g.font='700 14px '+F;sp('CHAMPION',95,226,3.2,'left');
+  var ch=played&&rows.length?rows[0]:null;
+  fit(ch?ch.t.n:'—',95,265,30,'700',900,'left','#fff');
+  fit(String(ch?ch.pts:0),1555,238,44,'700',300,'right','#f97316');
+  g.fillStyle='#e8dfd6';g.font='500 13px '+F;sp('TOTAL POINTS',1557,274,3.2,'right');
+  /* kepala tabel */
+  var MX0=735,MS=n>1?Math.min(83,(1190-MX0)/(n-1)):83,mx=function(m){return MX0+m*MS};
+  g.fillStyle='#8f857b';g.font='500 13px '+F;
+  sp('RANK',51,355,3.2,'left');sp('TEAM',113,355,3.2,'left');
+  var msz=Math.max(9,Math.min(13,MS*.42));g.font='500 '+msz+'px '+F;for(var m=0;m<n;m++)sp('M'+(m+1),mx(m),355,n>12?0:3.2,'center');
+  g.font='500 13px '+F;sp('B',1222,355,3.2,'center');sp('K',1288,355,3.2,'center');sp('PLAC',1366,355,3.2,'center');sp('TOTAL',1481,355,3.2,'center');
+  line(382,'#241812');
+  /* baris tim */
+  var y0=383,availH=1325-y0,N=Math.max(rows.length,1),rh=Math.min(78.6,availH/N),sc=Math.min(1,Math.max(.6,rh/66));
+  rows.forEach(function(r,i){
+    var top=y0+i*rh,cy=top+rh/2;
+    if(i<3){g.fillStyle=i==2?'#facc15':'#f97316';g.fillRect(0,top,5,rh)}
+    g.textAlign='center';g.fillStyle=i<3?'#fff':'#8f857b';g.font=(i<3?'700 ':'500 ')+(17*sc)+'px '+F;g.fillText(('0'+(i+1)).slice(-2),i==0?90:78,cy);
+    if(i==0){var x=64;g.strokeStyle='#f97316';g.lineWidth=2;g.lineJoin='round';g.beginPath();g.moveTo(x-9,cy+6);g.lineTo(x-9,cy-5);g.lineTo(x-4,cy);g.lineTo(x,cy-7);g.lineTo(x+4,cy);g.lineTo(x+9,cy-5);g.lineTo(x+9,cy+6);g.closePath();g.stroke();g.beginPath();g.moveTo(x-9,cy+10);g.lineTo(x+9,cy+10);g.stroke()}
+    fit(r.t.n,117,cy,19*sc,'700',560,'left','#fff');
+    g.font='500 '+Math.min(17*sc,MS*.5)+'px '+F;g.textAlign='center';
+    for(var m=0;m<n;m++){g.fillStyle=hasM[m]?'#cfc7be':'#5a5048';g.fillText(hasM[m]?String(mpts(m,r.t.id)):'·',mx(m),cy)}
+    g.font='500 '+(17*sc)+'px '+F;
+    g.fillStyle=r.b?'#f97316':'#5a5048';g.fillText(r.b?String(r.b):'·',1222,cy);
+    g.fillStyle='#cfc7be';g.fillText(String(r.k),1288,cy);g.fillText(String(r.pts-r.k*S.kp),1366,cy);
+    g.font='700 '+(22*sc)+'px '+F;g.fillStyle='#f97316';g.textAlign='right';g.fillText(String(r.pts),1510,cy);
+    if(i<rows.length-1)line(Math.round(top+rh),'#221812')});
+  /* footer */
+  line(1325,'#241812');g.textBaseline='middle';
+  fit(TT(),36,1370,15,'500',700,'left','#e8dfd6');
+  fit('Klasemen otomatis · Penghitung Poin',1557,1370,14,'500',600,'right','#8f857b');
+  return c}
+async function dlBoard(){
+  if(!calc().length){toast('Belum ada tim untuk dibuat gambar');return}
+  toast('Membuat gambar…');
+  var cv=await boardCanvas();
+  cv.toBlob(function(b){if(!b){toast('Gagal membuat gambar');return}
+    var a=document.createElement('a'),u=URL.createObjectURL(b),sg=TT().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'klasemen';
+    a.href=u;a.download='klasemen-'+sg+'-'+ALL.cur.replace(/\D/g,'')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);toast('Gambar klasemen diunduh (1600×1414)')},'image/png')}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#dlimg');if(b)dlBoard()});
 render();
