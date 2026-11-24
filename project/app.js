@@ -41,11 +41,10 @@ function viewMatch(){
   h+=scanCard();
   var ts=S.teams.filter(function(t){return t.n.trim()});
   if(!ts.length)h+='<div class="empty">Isi nama tim dulu di tab Tim.</div>';
-    else{h+='<div class="row r3 m"><span>Tim</span><span>Posisi</span><span>Kill</span><span class="p">Poin</span><span></span></div>';
+  else{h+='<div class="row r3 m"><span>Tim</span><span>Posisi</span><span>Kill</span><span class="p">Poin</span></div>';
     ts.forEach(function(t){var x=res[t.id]||{p:0,k:0};
-      h+='<div class="row r3"><div>'+esc(t.n)+'</div><select data-p="'+t.id+'" class="'+(x.p>0&&used[x.p]>1?'dup':'')+'"><option value="0">–</option>'+S.teams.map(function(_,i){return'<option value="'+(i+1)+'"'+(x.p==i+1?' selected':'')+'>#'+(i+1)+'</option>'}).join('')+'</select><input type="number" min="0" inputmode="numeric" data-k="'+t.id+'" value="'+(x.k||0)+'"><div class="p" id="pt'+t.id+'">'+mpts(cur,t.id)+'</div><button class="btn ghost clr1" type="button" data-clr="'+t.id+'" title="Hapus poin tim ini" aria-label="Hapus poin '+esc(t.n)+'">×</button></div>'});
-    h+='<div class="m">Posisi yang dipakai dua tim ditandai merah. Tombol × menghapus posisi dan kill satu tim di match ini.</div>';
-    h+='<div class="acts"><button class="btn danger" type="button" id="clrm">'+(clrConf=='m'?'Yakin? Hapus poin Match '+(cur+1):'Hapus semua poin Match '+(cur+1))+'</button><button class="btn danger" type="button" id="clra">'+(clrConf=='a'?'Yakin? Hapus poin SEMUA match':'Hapus poin semua match')+'</button></div>'}
+      h+='<div class="row r3"><div>'+esc(t.n)+'</div><select data-p="'+t.id+'" class="'+(x.p>0&&used[x.p]>1?'dup':'')+'"><option value="0">–</option>'+S.teams.map(function(_,i){return'<option value="'+(i+1)+'"'+(x.p==i+1?' selected':'')+'>#'+(i+1)+'</option>'}).join('')+'</select><input type="number" min="0" inputmode="numeric" data-k="'+t.id+'" value="'+(x.k||0)+'"><div class="p" id="pt'+t.id+'">'+mpts(cur,t.id)+'</div></div>'});
+    h+='<div class="m">Posisi yang dipakai dua tim ditandai merah.</div>'}
   return h+'</div>'}
 function viewTim(){
   var h=bulkCard()+'<div class="card"><h2>Daftar tim ('+S.teams.filter(function(t){return t.n.trim()}).length+'/'+S.teams.length+')</h2>';
@@ -436,19 +435,4 @@ async function dlBoard(){
     var a=document.createElement('a'),u=URL.createObjectURL(b),sg=TT().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'klasemen';
     a.href=u;a.download='klasemen-'+sg+'-'+ALL.cur.replace(/\D/g,'')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);toast('Gambar klasemen diunduh (1600×1414)')},'image/png')}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#dlimg');if(b)dlBoard()});
-/* ---- hapus poin: per tim, per match, atau semua match di sesi ini ---- */
-var clrConf='';
-function clearTeamPoints(id){
-  if(S.res[cur]){delete S.res[cur][id]}
-  save();render();toast('Poin tim dihapus dari Match '+(cur+1))}
-function clearMatchPoints(){S.res[cur]={};save();render();toast('Semua poin Match '+(cur+1)+' dihapus')}
-function clearAllPoints(){S.res={};save();render();toast('Poin semua match dihapus')}
-document.addEventListener('click',function(e){
-  var b=e.target.closest&&e.target.closest('button');if(!b)return;
-  if(b.dataset.clr!==undefined){clearTeamPoints(b.dataset.clr);return}
-  if(b.id=='clrm'||b.id=='clra'){
-    var k=b.id=='clrm'?'m':'a';
-    if(clrConf!==k){clrConf=k;render();setTimeout(function(){if(clrConf==k){clrConf='';render()}},4000);return}   /* klik pertama = minta konfirmasi */
-    clrConf='';k=='m'?clearMatchPoints():clearAllPoints()}
-});
 render();
