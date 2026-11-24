@@ -29,7 +29,7 @@ function viewKlasemen(){
   var h='<div class="card lbc"><div class="lbh"><h2>Klasemen · '+ALL.cur+'</h2><span class="m">'+done+'/'+S.maps.length+' match<button class="sndb" id="sndt" type="button" aria-label="Efek suara" title="Efek suara">'+(SND?'\ud83d\udd0a':'\ud83d\udd07')+'</button></span></div>';
   if(!rows.length)h+='<div class="empty">Belum ada tim. Isi nama tim di tab Tim.</div>';
   else{h+='<ol class="lbl">';
-    rows.forEach(function(r,i){h+='<li class="'+(i<3?'top':'')+'"><span class="no">'+(i+1)+'</span><span class="nm">'+av(r.t)+'<span class="nt">'+esc(r.t.n)+(r.t.k?'<small>'+esc(r.t.k)+'</small>':'')+'</span></span><span class="kl">'+r.k+' K'+(r.b?' · '+r.b+'B':'')+'</span><span class="pt">'+r.pts+'</span></li>'});
+    rows.forEach(function(r,i){h+='<li class="'+(i<3?'top':'')+'"><span class="no">'+(i+1)+'</span><span class="nm"><span class="nt">'+esc(r.t.n)+(r.t.k?'<small>'+esc(r.t.k)+'</small>':'')+'</span></span><span class="kl">'+r.k+' K'+(r.b?' · '+r.b+'B':'')+'</span><span class="pt">'+r.pts+'</span></li>'});
     h+='</ol>'}
   h+='<div class="acts"><button class="btn" id="cp">Salin untuk WhatsApp</button></div></div>';
   return h}
@@ -38,7 +38,7 @@ function viewMatch(){
   Object.keys(res).forEach(function(id){var p=res[id].p;if(p>0)used[p]=(used[p]||0)+1});
   var h='<div class="chips">'+S.maps.map(function(_,i){return'<button class="chip" aria-pressed="'+(i==cur)+'" data-m="'+i+'">Match '+(i+1)+'</button>'}).join('')+'</div>';
   h+='<div class="card"><h2>Match '+(cur+1)+'</h2><div class="row" style="grid-template-columns:auto 1fr"><span class="m">Map</span><select id="map">'+MAPS.map(function(m){return'<option'+(m==S.maps[cur]?' selected':'')+'>'+m+'</option>'}).join('')+'</select></div>';
-  if(smp)h+='<div class="scan"><b>Scan screenshot hasil</b><div class="m">Pilih screenshot hasil match, lalu posisi dan kill terisi otomatis. Periksa lagi hasilnya sebelum dipakai.</div><input type="file" id="shots" accept="image/*" multiple><button class="btn" id="scan">Scan dan isi poin</button><div class="m" id="scst">'+esc(scmsg)+'</div></div>';
+  h+=scanCard();
   var ts=S.teams.filter(function(t){return t.n.trim()});
   if(!ts.length)h+='<div class="empty">Isi nama tim dulu di tab Tim.</div>';
   else{h+='<div class="row r3 m"><span>Tim</span><span>Posisi</span><span>Kill</span><span class="p">Poin</span></div>';
@@ -47,11 +47,11 @@ function viewMatch(){
     h+='<div class="m">Posisi yang dipakai dua tim ditandai merah.</div>'}
   return h+'</div>'}
 function viewTim(){
-  var h='<div class="card"><h2>Daftar tim ('+S.teams.filter(function(t){return t.n.trim()}).length+'/'+S.teams.length+')</h2>';
-  S.teams.forEach(function(t,i){h+='<div class="row r4"><span class="m">'+(i+1)+'</span>'+lgBtn(t,i)+'<input data-n="'+i+'" placeholder="Nama tim" value="'+esc(t.n)+'"><input data-nk="'+i+'" placeholder="Nickname" value="'+esc(t.k)+'"></div>'});
+  var h=bulkCard()+'<div class="card"><h2>Daftar tim ('+S.teams.filter(function(t){return t.n.trim()}).length+'/'+S.teams.length+')</h2>';
+  S.teams.forEach(function(t,i){h+='<div class="row r4"><span class="m">'+(i+1)+'</span><input data-n="'+i+'" placeholder="Nama tim" value="'+esc(t.n)+'"><input data-nk="'+i+'" placeholder="Nickname" value="'+esc(t.k)+'"></div>'});
   return h+'<div class="acts" style="align-items:center"><span class="m">Slot tim</span><button class="btn ghost" id="dect" aria-label="Kurangi slot">−</button><b>'+S.teams.length+'</b><button class="btn ghost" id="addt" aria-label="Tambah slot">+</button></div></div>'}
 function viewAtur(){
-  var h='<div class="card"><h2>Nama turnamen</h2><input id="tname" maxlength="30" placeholder="ZHXIN FT" value="'+esc(TT())+'"><p class="m">Tampil di judul halaman dan teks WhatsApp.</p></div><div class="card"><h2>Slogan &amp; deskripsi</h2><input id="sl" maxlength="40" placeholder="Good Game, Good Friend ✦" value="'+esc(ALL.slogan||'')+'"><input id="dsc" maxlength="120" placeholder="Deskripsi, misal: Mode squad, 12 slot, main event 14.00–01.00 WIB" value="'+esc(ALL.desc||'')+'" style="margin-top:8px"><p class="m">Slogan tampil di atas judul, deskripsi di bawahnya. Kosongkan untuk kembali ke teks bawaan.</p></div><div class="card"><h2>Backsound (Spotify)</h2><input id="spl" placeholder="Tempel link playlist, album, atau lagu Spotify" value="'+esc(ALL.music||'')+'"><p class="m">Pemutar muncul lewat tombol \u266a di pojok kanan bawah. Tanpa login Spotify, lagu hanya diputar 30 detik. Kosongkan untuk menghapus.</p></div><div class="card"><h2>Poin placement</h2><div class="sc">';
+  var h='<div class="card"><h2>Nama turnamen</h2><input id="tname" maxlength="30" placeholder="ZHXIN FT" value="'+esc(TT())+'"><p class="m">Tampil di judul halaman dan teks WhatsApp.</p></div><div class="card"><h2>Slogan &amp; deskripsi</h2><input id="sl" maxlength="40" placeholder="Good Game, Good Friend ✦" value="'+esc(ALL.slogan||'')+'"><input id="dsc" maxlength="120" placeholder="Deskripsi, misal: Mode squad, 12 slot, main event 14.00–01.00 WIB" value="'+esc(ALL.desc||'')+'" style="margin-top:8px"><p class="m">Slogan tampil di atas judul, deskripsi di bawahnya. Kosongkan untuk kembali ke teks bawaan.</p></div><div class="card"><h2>Tombol WhatsApp (kontak)</h2><input id="wal" placeholder="Link WhatsApp atau nomor, mis. https://wa.me/6281234567890" value="'+esc(ALL.wa||'')+'"><p class="m">Tombol hijau muncul di pojok kanan bawah dan membuka chat/grup WhatsApp ini. Bisa diisi link wa.me, link grup chat.whatsapp.com, atau nomor (08xx otomatis jadi 628xx). Kosongkan untuk menyembunyikan.</p></div><div class="card"><h2>Poin placement</h2><div class="sc">';
   S.pts.forEach(function(p,i){h+='<div><label>#'+(i+1)+'</label><input type="number" inputmode="numeric" data-sp="'+i+'" value="'+p+'"></div>'});
   h+='<div><label>Per kill</label><input type="number" inputmode="numeric" id="kp" value="'+S.kp+'"></div></div><p class="m">Bawaan: 12, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0 dan 1 poin per kill. Urutan tie: poin, booyah, kill.</p></div>';
   h+='<div class="card"><h2>Jumlah match</h2><div class="acts" style="margin:0"><button class="btn ghost" id="mm">−</button><b style="align-self:center">'+S.maps.length+'</b><button class="btn ghost" id="mp">+</button></div></div>';
@@ -61,7 +61,7 @@ function viewAtur(){
   else h+='<div class="card"><h2>Hapus data</h2><p class="m">Menghapus semua tim, match, dan hasil di semua sesi, lalu mengulang turnamen dari awal.</p><button class="btn danger" id="rst">Reset turnamen</button></div>';
   return h}
 function sesNav(){document.getElementById('sch').innerHTML=SESI.map(function(j){var d=ALL.d[j],has=d&&Object.keys(d.res).some(function(m){return Object.keys(d.res[m]).length});return'<button class="chip" aria-pressed="'+(j==ALL.cur)+'" data-s="'+j+'">'+j+(has?' •':'')+'</button>'}).join('')}
-function render(){if(!ADM&&tab!='klasemen')tab='klasemen';chk();mus();requestAnimationFrame(fx);sesNav();nav();hm();ttl();adb();var v={klasemen:viewKlasemen,match:viewMatch,tim:viewTim,atur:viewAtur}[tab];document.getElementById('main').innerHTML=v();if(tab=='atur'){try{var q=localStorage.getItem(HK);if(q)setHero(q)}catch(e){}}}
+function render(){if(!ADM&&tab!='klasemen')tab='klasemen';chk();wab();requestAnimationFrame(fx);sesNav();nav();hm();ttl();adb();var v={klasemen:viewKlasemen,match:viewMatch,tim:viewTim,atur:viewAtur}[tab];document.getElementById('main').innerHTML=v();if(tab=='atur'){try{var q=localStorage.getItem(HK);if(q)setHero(q)}catch(e){}}}
 function hm(){var e=document.getElementById('hm'),t=document.getElementById('tg');if(e)e.textContent=(ALL.desc||'').trim()||'Mode squad, '+S.teams.length+' slot, main event setiap hari 14.00–01.00 WIB';if(t)t.textContent=(ALL.slogan||'').trim()||'Good Game, Good Friend ✦'}
 function setHero(u){var h=document.getElementById('hero'),t=document.getElementById('thm');
   if(u){h.style.setProperty('--himg','url("'+u+'")');h.classList.add('cu');if(t)t.style.backgroundImage='url("'+u+'")'}
@@ -71,8 +71,6 @@ function waText(){var r=calc(),t='*'+TT()+' — KLASEMEN '+ALL.cur+' WIB*\n';r.f
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(b.id=='sndt'){SND=!SND;try{localStorage.setItem('zhxin-ft-snd',SND?'1':'0')}catch(x){}if(SND)snd(true);render();return}
-  if(b.dataset.lgx!==undefined){delete S.teams[+b.dataset.lgx].l;save();render();return}
-  if(b.id=='mbtn'){mtog();return}
   if(admClick(b))return;
   if(b.dataset.s){ALL.cur=b.dataset.s;S=ses();cur=0;save();render();return}
   if(b.dataset.t){tab=b.dataset.t;rconf=false;render();window.scrollTo(0,0);return}
@@ -87,7 +85,7 @@ document.addEventListener('click',function(e){
   if(b.id=='mm'){if(S.maps.length>1){var l=S.maps.length-1;S.maps.pop();delete S.res[l];if(cur>=S.maps.length)cur=S.maps.length-1;save();render()}return}
   if(b.id=='rst'){rconf=true;render();return}
   if(b.id=='rsc'){rconf=false;render();return}
-  if(b.id=='rsy'){rconf=false;ALL={cur:SESI[0],d:{},title:ALL.title,slogan:ALL.slogan,desc:ALL.desc,music:ALL.music};S=ses();cur=0;tab='klasemen';scmsg='';save();render();window.scrollTo(0,0);toast('Turnamen direset dari awal')}
+  if(b.id=='rsy'){rconf=false;ALL={cur:SESI[0],d:{},title:ALL.title,slogan:ALL.slogan,desc:ALL.desc,wa:ALL.wa};S=ses();cur=0;tab='klasemen';scmsg='';save();render();window.scrollTo(0,0);toast('Turnamen direset dari awal')}
 });
 document.addEventListener('input',function(e){
   var d=e.target.dataset;
@@ -103,8 +101,7 @@ document.addEventListener('input',function(e){
   save()});
 document.addEventListener('change',function(e){
   if(e.target.id=='map'){S.maps[cur]=e.target.value;save();return}
-  if(e.target.dataset.lg!==undefined){logoFile(+e.target.dataset.lg,e.target.files[0]);return}
-  if(e.target.id=='spl'){ALL.music=e.target.value.trim().slice(0,200);save();mld='';var pp=document.getElementById('mpan');if(pp){pp.innerHTML='';pp.classList.remove('on')}mus();toast(spUrl(ALL.music)?'Backsound disimpan':(ALL.music?'Link Spotify tidak dikenali':'Backsound dihapus'));return}
+  if(e.target.id=='wal'){ALL.wa=e.target.value.trim().slice(0,200);save();wab();toast(waUrl(ALL.wa)?'Tombol WhatsApp disimpan':(ALL.wa?'Link atau nomor WhatsApp tidak dikenali':'Tombol WhatsApp disembunyikan'));return}
   if(e.target.id=='himg'){heroFile(e.target.files[0]);return}
   if(e.target.dataset.p!==undefined){S.res[cur]=S.res[cur]||{};var x=S.res[cur][e.target.dataset.p]=S.res[cur][e.target.dataset.p]||{p:0,k:0};x.p=+e.target.value;save();render()}
 });
@@ -112,7 +109,7 @@ function heroFile(f){if(!f)return;var r=new FileReader();r.onload=function(){var
   var w=Math.min(1000,im.width),c=document.createElement('canvas');c.width=w;c.height=Math.round(im.height*w/im.width);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
   var u=c.toDataURL('image/jpeg',.82);try{localStorage.setItem(HK,u)}catch(x){toast('Gambar terlalu besar untuk disimpan');}setHero(u);toast('Gambar header diganti')};
   im.onerror=function(){toast('Gambar tidak terbaca')};im.src=r.result};r.readAsDataURL(f)}
-var smp=null,scmsg='',busy=false,rconf=false,dconf=0;
+var scmsg='',busy=false,rconf=false,dconf=0;
 var ADM=false,AK='zhxin-ft-admin-v1',amode='';
 try{ADM=sessionStorage.getItem('zhxin-adm')=='1'}catch(e){}
 function adm(){return{email:'bladezxin01@gmail.com',salt:'b593727342e9a819d70d3b61a3d977ac',hash:'93a18edd43c7ab81212a5c7fe930f507c34a90c76ab36fc62bfdf364ffa8ea91'}}
@@ -135,23 +132,17 @@ function amod(mode){cls();amode=mode;var a=adm(),h='<div class="amod" id="amod" 
 function login(){ADM=true;try{sessionStorage.setItem('zhxin-adm','1')}catch(e){}cls();render();toast('Mode admin aktif')}
 function logout(){if(sb){try{sb.auth.signOut()}catch(e){}}ADM=false;try{sessionStorage.removeItem('zhxin-adm')}catch(e){}tab='klasemen';render();toast('Keluar dari mode admin')}
 var M=window.Motion,RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches,fxd=false,mld='';
-function fx(){if(!M||RM)return;try{var a=Array.from(document.querySelectorAll('#main .card'+(fxd?'':', #dash .card')));fxd=true;
+function fx(){if(!M||!ANIM)return;try{var a=Array.from(document.querySelectorAll('#main .card'+(fxd?'':', #dash .card')));fxd=true;
   if(a.length)M.animate(a,{opacity:[0,1],y:[16,0]},{duration:.45,delay:M.stagger(.07),ease:'easeOut'});
   var r=Array.from(document.querySelectorAll('#main .lbl li'));
   if(r.length)M.animate(r,{opacity:[0,1],x:[-8,0]},{duration:.35,delay:M.stagger(.03,{startDelay:.15})})}catch(e){}}
 function hov(sel,ov,ou){
-  document.addEventListener('pointerover',function(e){if(!M||RM||e.pointerType!='mouse')return;var t=e.target.closest&&e.target.closest(sel);if(t&&!t.contains(e.relatedTarget)){try{M.animate(t,ov,{duration:.2})}catch(x){}}});
-  document.addEventListener('pointerout',function(e){if(!M||RM||e.pointerType!='mouse')return;var t=e.target.closest&&e.target.closest(sel);if(t&&!t.contains(e.relatedTarget)){try{M.animate(t,ou,{duration:.25})}catch(x){}}})}
+  document.addEventListener('pointerover',function(e){if(!M||!ANIM||e.pointerType!='mouse')return;var t=e.target.closest&&e.target.closest(sel);if(t&&!t.contains(e.relatedTarget)){try{M.animate(t,ov,{duration:.2})}catch(x){}}});
+  document.addEventListener('pointerout',function(e){if(!M||!ANIM||e.pointerType!='mouse')return;var t=e.target.closest&&e.target.closest(sel);if(t&&!t.contains(e.relatedTarget)){try{M.animate(t,ou,{duration:.25})}catch(x){}}})}
 hov('#main .card, #dash .card',{y:-3},{y:0});
 hov('.btn, .chip, nav button',{scale:1.04},{scale:1});
 hov('.lbl li',{x:3},{x:0});
-document.addEventListener('pointerdown',function(e){if(!M||RM)return;var t=e.target.closest&&e.target.closest('.btn, .chip, .mbtn');if(t){try{M.animate(t,{scale:.95},{duration:.1})}catch(x){}}});
-if(window.Lenis&&!RM){try{var ls=new Lenis({lerp:.1});var raf=function(t){ls.raf(t);requestAnimationFrame(raf)};requestAnimationFrame(raf)}catch(e){}}
-function spUrl(u){u=(u||'').trim();var m=u.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|playlist|episode|show|artist)\/([A-Za-z0-9]+)/)||u.match(/^spotify:(track|album|playlist|episode|show|artist):([A-Za-z0-9]+)$/);return m?'https://open.spotify.com/embed/'+m[1]+'/'+m[2]+'?utm_source=generator':''}
-function mus(){var b=document.getElementById('mbtn'),p=document.getElementById('mpan');if(!b||!p)return;var u=spUrl(ALL.music);b.style.display=(u||ADM)?'grid':'none';if(!u){p.innerHTML='';p.classList.remove('on');mld=''}}
-function mtog(){var p=document.getElementById('mpan'),u=spUrl(ALL.music);if(!u){toast(ADM?'Isi link Spotify di tab Atur':'Backsound belum diatur');return}
-  if(mld!==u){mld=u;p.innerHTML='<iframe src="'+u+'" width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Pemutar Spotify"></iframe>'}
-  p.classList.toggle('on')}
+document.addEventListener('pointerdown',function(e){if(!M||!ANIM)return;var t=e.target.closest&&e.target.closest('.btn, .chip, .mbtn');if(t){try{M.animate(t,{scale:.95},{duration:.1})}catch(x){}}});
 var SND=true,ac=null,lT=null,lK='';
 try{SND=localStorage.getItem('zhxin-ft-snd')!='0'}catch(e){}
 function snd(up){if(!SND)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state=='suspended')ac.resume();var n=ac.currentTime,f=up?[660,880]:[440,330];f.forEach(function(q,i){var o=ac.createOscillator(),g=ac.createGain(),t=n+i*.09;o.type='sine';o.frequency.value=q;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.18)})}catch(e){}}
@@ -165,12 +156,9 @@ function dash(){var e=document.getElementById('dash');if(!e)return;
   var h='<div class="card dsh"><div class="lbh"><h2>Dashboard</h2><span class="m">Sesi '+ALL.cur+' WIB</span></div><div class="stg">'+st(dc+'/'+tot,'Match selesai')+st(nt+'/'+S.teams.length,'Tim terisi')+st(kill,'Total kill')+st(nm.length?nm[0].pts:0,'Poin tertinggi')+'</div>';
   h+='<div class="dh">Posisi teratas</div>';
   if(!nm.length)h+='<div class="m">Belum ada tim.</div>';
-  nm.slice(0,3).forEach(function(r,i){h+='<div class="pr"><span class="no">'+(i+1)+'</span>'+av(r.t)+'<span class="nt">'+esc(r.t.n)+'</span><span class="pt">'+r.pts+'</span><div class="bar"><i style="width:'+Math.round(r.pts/mx*100)+'%"></i></div></div>'});
+  nm.slice(0,3).forEach(function(r,i){h+='<div class="pr"><span class="no">'+(i+1)+'</span><span class="nt">'+esc(r.t.n)+'</span><span class="pt">'+r.pts+'</span><div class="bar"><i style="width:'+Math.round(r.pts/mx*100)+'%"></i></div></div>'});
   h+='<div class="dh">Progres match</div><div class="mps">'+dn.map(function(d,m){return'<span class="mp'+(d?' ok':'')+'" title="'+esc(S.maps[m])+'">'+(m+1)+'</span>'}).join('')+'</div></div>';
   e.innerHTML=h}
-function av(t){return t.l?'<img class="lgi" alt="" src="'+t.l+'">':'<i class="lgi">'+esc((t.n||'?').trim().charAt(0).toUpperCase())+'</i>'}
-function lgBtn(t,i){return'<span class="lgw"><label class="lg" title="Pilih logo tim"'+(t.l?' style="background-image:url(\''+t.l+'\')"':'')+'>'+(t.l?'':'+')+'<input type="file" accept="image/*" data-lg="'+i+'"></label>'+(t.l?'<button class="lgx" type="button" data-lgx="'+i+'" aria-label="Hapus logo">\u00d7</button>':'')+'</span>'}
-function logoFile(i,f){if(!f||!S.teams[i])return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var z=96,c=document.createElement('canvas');c.width=c.height=z;var q=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-q)/2,(im.height-q)/2,q,q,0,0,z,z);S.teams[i].l=c.toDataURL('image/webp',.85);save();render();toast('Logo tim disimpan')};im.onerror=function(){toast('Gambar tidak terbaca')};im.src=r.result};r.readAsDataURL(f)}
 var abusy=false;
 async function asub(){if(abusy)return;var er=document.getElementById('a_er');function bad(t){if(er)er.textContent=t}
   if(!window.crypto||!crypto.subtle){bad('Browser ini tidak mendukung penyimpanan password yang aman.');return}
@@ -199,32 +187,181 @@ var sb=null,CID=Math.random().toString(36).slice(2),pTm=null,rtc=null,lastJ='';
 if(sb)ADM=false;
 function qpush(){if(!sb||!ADM)return;clearTimeout(pTm);pTm=setTimeout(push,700)}
 async function push(){if(!sb||!ADM)return;var o=JSON.parse(JSON.stringify(ALL));o._by=CID;try{var r=await sb.from('ft_state').upsert({id:'main',data:o,updated_at:new Date().toISOString()});if(r.error)toast('Gagal sinkron: '+r.error.message)}catch(e){toast('Gagal sinkron ke server')}}
-function applyRemote(d,first){var j=JSON.stringify(d);if(j===lastJ)return;lastJ=j;var c=ALL.cur;ALL=JSON.parse(j);delete ALL._by;if(!ALL.d)ALL.d={};ALL.cur=SESI.indexOf(c)>=0?c:SESI[0];S=ses();if(first)lT=null;try{localStorage.setItem(KEY,JSON.stringify(ALL))}catch(e){}if(cur>=S.maps.length)cur=0;render()}
+function applyRemote(d,first){var j=JSON.stringify(d);if(j===lastJ)return;lastJ=j;var c=ALL.cur;ALL=JSON.parse(j);delete ALL._by;if(!ALL.d)ALL.d={};nologo();ALL.cur=SESI.indexOf(c)>=0?c:SESI[0];S=ses();if(first)lT=null;try{localStorage.setItem(KEY,JSON.stringify(ALL))}catch(e){}if(cur>=S.maps.length)cur=0;render()}
 async function pull(first){if(!sb)return;try{var r=await sb.from('ft_state').select('data').eq('id','main').maybeSingle();if(r.error)throw r.error;if(r.data&&r.data.data&&r.data.data.d)applyRemote(r.data.data,first);else if(ADM)push()}catch(e){}}
 function sub(){if(!sb||rtc)return;try{rtc=sb.channel('ft-main').on('postgres_changes',{event:'*',schema:'public',table:'ft_state'},function(p){var d=p&&p.new&&p.new.data;if(d&&d._by!==CID)applyRemote(d,false)}).subscribe()}catch(e){}}
 if(sb){sb.auth.getSession().then(function(r){if(r&&r.data&&r.data.session){ADM=true;pull(true);render()}});pull(true);sub();setInterval(function(){if(!ADM)pull(false)},15000)}
 document.addEventListener('keydown',function(e){if(e.key=='Escape')cls();if(e.key=='Enter'&&e.target.closest&&e.target.closest('#amod'))asub()});
-function scerr(c){return{not_granted:'Izin Claude belum diberikan.',rate_limited:'Terlalu banyak permintaan atau kuota habis. Coba lagi nanti.',image_rejected:'Gambar ditolak. Pakai JPG atau PNG yang lebih kecil.',images_unavailable:'Scan gambar tidak tersedia di tampilan ini.',invalid_json:'Hasil scan tidak terbaca. Coba lagi atau isi manual.',refused:'Gambar tidak bisa diproses.',cancelled:''}[c]||'Scan gagal. Coba lagi atau isi manual.'}
+/* ================= v6: animasi on/off, WhatsApp, isi tim massal, scan OCR ================= */
+/* ---- animasi ---- */
+var ANIM=!RM,ls=null;
+try{var a0=localStorage.getItem('zhxin-ft-anim');if(a0!==null)ANIM=a0=='1'}catch(e){}
+function lenisOn(){if(ls||!window.Lenis||!ANIM)return;try{var l=new Lenis({lerp:.1});ls=l;var raf=function(t){if(ls!==l)return;l.raf(t);requestAnimationFrame(raf)};requestAnimationFrame(raf)}catch(e){ls=null}}
+function lenisOff(){if(!ls)return;try{ls.destroy()}catch(e){}ls=null}
+function applyAnim(){
+  document.body.classList.toggle('noanim',!ANIM);
+  document.querySelectorAll('svg').forEach(function(v){try{ANIM?v.unpauseAnimations():v.pauseAnimations()}catch(e){}});
+  if(ANIM)lenisOn();else lenisOff();
+  var b=document.getElementById('animb');if(b){b.textContent='Animasi: '+(ANIM?'Nyala':'Mati');b.setAttribute('aria-pressed',ANIM?'true':'false')}}
+/* ---- WhatsApp ---- */
+function waUrl(u){u=(u||'').trim();if(!u)return'';
+  u=u.replace(/^http:\/\//i,'https://');
+  if(/^(?:wa\.me|chat\.whatsapp\.com|api\.whatsapp\.com|(?:www\.)?whatsapp\.com)\//i.test(u))u='https://'+u;
+  if(/^https:\/\/(?:wa\.me|chat\.whatsapp\.com|api\.whatsapp\.com|(?:www\.)?whatsapp\.com)\/[^\s"'<>]+$/i.test(u))return u;
+  var d=u.replace(/[\s().\-]/g,'');if(d.charAt(0)=='+')d=d.slice(1);
+  if(/^\d{8,15}$/.test(d)){if(d.charAt(0)=='0')d='62'+d.slice(1);else if(d.charAt(0)=='8'&&d.length<=12)d='62'+d;return'https://wa.me/'+d}
+  return''}
+function wab(){var b=document.getElementById('mbtn');if(!b)return;var u=waUrl(ALL.wa);b.style.display=(u||ADM)?'grid':'none';b.setAttribute('href',u||'#')}
+/* ---- isi nama tim sekaligus ---- */
+var bulkTxt='',bulkRep=false,cconf=false;
+function splitTeams(t){
+  t=String(t||'').replace(/\r/g,'');
+  var L=t.split('\n').map(function(x){return x.trim()}).filter(Boolean);
+  if(L.length==1){
+    if((L[0].match(/(?:^|\s)\d{1,2}[\.\)]\s/g)||[]).length>=2)L=L[0].split(/\s*(?:^|\s)\d{1,2}[\.\)]\s+/).filter(Boolean);
+    else if(/[,;\t|]/.test(L[0]))L=L[0].split(/\s*[,;\t|]\s*/)}
+  var num=L.length>1&&L.every(function(x){return/^\(?\d{1,2}\s+\S/.test(x)});
+  var seen={},out=[];
+  L.forEach(function(x){
+    x=x.replace(/^\(?\d{1,2}\s*[\.\)\]:]\s*/,'').replace(/^[-•*·]\s+/,'');
+    if(num)x=x.replace(/^\(?\d{1,2}\s+/,'');
+    x=x.replace(/\s+/g,' ').trim().slice(0,40);if(!x)return;
+    var k=x.toLowerCase();if(seen[k])return;seen[k]=1;out.push(x)});
+  return out}
+function bulkPv(){var n=splitTeams(bulkTxt);
+  if(!n.length)return'<span class="m" style="border:0;background:none">Tempel daftar tim di atas, hasil pemisahan tampil di sini.</span>';
+  return n.slice(0,30).map(function(x,i){return'<span><b>'+(i+1)+'</b>'+esc(x)+'</span>'}).join('')+(n.length>30?'<span class="m">+'+(n.length-30)+' lagi (maks. 30 tim)</span>':'')}
+function bulkCard(){return'<div class="card"><h2>Isi nama tim sekaligus</h2><div class="bulk"><textarea id="bulk" placeholder="Tempel daftar tim di sini, satu tim per baris.&#10;Nomor urut (1. / 2) / 3 -), tanda koma, titik koma, atau tab dipisah otomatis.">'+esc(bulkTxt)+'</textarea><div class="pv" id="bulkpv">'+bulkPv()+'</div><label class="m"><input type="checkbox" id="bulkrep" style="width:auto"'+(bulkRep?' checked':'')+'> Ganti semua nama yang sudah ada (bukan hanya mengisi slot kosong)</label><div class="acts"><button class="btn" id="bulkgo" type="button">Isi ke daftar tim</button><button class="btn ghost" id="bulkclr" type="button">Kosongkan semua nama</button></div></div></div>'}
+function growTeams(len){while(S.teams.length<len&&S.teams.length<30)S.teams.push({id:Date.now()+S.teams.length,n:'',k:''});while(S.pts.length<S.teams.length)S.pts.push(0)}
+function bulkApply(){
+  var n=splitTeams(bulkTxt);if(!n.length){toast('Belum ada nama untuk diisi');return}
+  var cut=0;if(n.length>30){cut=n.length-30;n=n.slice(0,30)}
+  var slots=[];
+  if(bulkRep){S.teams.forEach(function(t){t.n=''});growTeams(n.length);S.teams.forEach(function(_,i){slots.push(i)})}
+  else{S.teams.forEach(function(t,i){if(!t.n.trim())slots.push(i)});var need=n.length-slots.length;if(need>0){var s0=S.teams.length;growTeams(s0+need);for(var i=s0;i<S.teams.length;i++)slots.push(i)}}
+  var used=0;n.forEach(function(nm,i){if(slots[i]===undefined)return;S.teams[slots[i]].n=nm;used++});
+  bulkTxt='';save();render();toast(used+' tim terisi'+(cut?', '+cut+' dilewati (maks. 30)':'')+(used<n.length?', '+(n.length-used)+' tidak muat':''))}
+/* logo tim sudah dihapus: bersihkan sisa data lama */
+function nologo(){try{Object.keys(ALL.d||{}).forEach(function(k){(ALL.d[k].teams||[]).forEach(function(t){delete t.l})})}catch(e){}}
+nologo();
+/* ---- scan OCR ---- */
+var OCR=null,ocrAll=false;
+function ocrPts(t){return(S.pts[t.place-1]||0)+(t.kills||0)*S.kp}
+function scanCard(){
+  var h='<div class="scan"><b>Scan screenshot hasil (AI OCR)</b><div class="m">Pilih screenshot layar hasil akhir match. Kill 4 pemain tiap tim dijumlahkan otomatis, peringkat dibaca dari urutan tim (kolom kiri atas ke bawah, lalu kolom kanan). Periksa hasilnya sebelum diterapkan.</div><input type="file" id="shots" accept="image/*" multiple>';
+  h+='<label class="m"><input type="checkbox" id="ocrall" style="width:auto"'+(ocrAll?' checked':'')+'> Baca juga nama keempat pemain (lebih lambat)</label>';
+  h+='<button class="btn" id="scan" type="button"'+(busy?' disabled':'')+'>'+(busy?'Memproses...':'Scan dan analisis')+'</button><div class="ocrbar"><i id="ocrbar"></i></div><div class="m" id="scst">'+esc(scmsg)+'</div></div>';
+  if(OCR&&OCR.m===cur)h+=ocrPanel();
+  return h}
+function ocrMatch(R){
+  var cand=S.teams.filter(function(t){return t.n.trim()}),pairs=[];
+  R.teams.forEach(function(t,i){t.tid=0;cand.forEach(function(c){var sc=Math.max(ZOCR.sim(t.rep,c.n),c.k?ZOCR.sim(t.rep,c.k):0);if(sc>=.62)pairs.push({i:i,id:c.id,s:sc})})});
+  pairs.sort(function(a,b){return b.s-a.s});var ui={},ut={};
+  pairs.forEach(function(p){if(ui[p.i]||ut[p.id])return;ui[p.i]=1;ut[p.id]=1;R.teams[p.i].tid=p.id});
+  /* baris yang tidak cocok: jika masih ada tim bernama yang belum terpakai, minta admin memilih (-2); jika tidak ada, buat tim baru (0) */
+  var free=cand.filter(function(c){return!ut[c.id]}).length;
+  R.teams.forEach(function(t){if(!t.tid)t.tid=free?-2:0})}
+function ocrSum(){
+  var R=OCR,ts=R.teams.filter(function(t){return t.tid!==-1});
+  if(!ts.length)return{html:'Belum ada tim yang dipakai.',text:''};
+  var rows=ts.map(function(t){return{n:(t.rep||'').trim()||('Tim peringkat '+t.place),p:t.place,k:t.kills||0,pt:ocrPts(t),pl:t.players}}).sort(function(a,b){return a.p-b.p});
+  var L=[],tk=0;rows.forEach(function(r){tk+=r.k});
+  rows.slice(0,3).forEach(function(r){L.push('Juara '+r.p+': '+r.n+' — '+r.pt+' poin ('+r.k+' kill)')});
+  var mk=Math.max.apply(null,rows.map(function(r){return r.k})),hk=rows.filter(function(r){return r.k==mk});
+  L.push('Kill tim terbanyak: '+hk.map(function(r){return r.n}).join(', ')+' ('+mk+' kill)');
+  var mp=Math.max.apply(null,rows.map(function(r){return r.pt})),hp=rows.filter(function(r){return r.pt==mp});
+  if(hp.indexOf(rows[0])<0)L.push('Poin tertinggi: '+hp.map(function(r){return r.n}).join(', ')+' ('+mp+' poin)');
+  var bp=null;rows.forEach(function(r){(r.pl||[]).forEach(function(p,j){if(p.k!==null&&p.k!==undefined&&(!bp||p.k>bp.k))bp={k:p.k,n:(p.name||'').trim()||('pemain '+(j+1)+' tim '+r.n)}})});
+  if(bp&&bp.k>0)L.push('Kill pemain tertinggi: '+bp.n+' ('+bp.k+' kill)');
+  L.push('Total kill match: '+tk+' dari '+rows.length+' tim (rata-rata '+(tk/rows.length).toFixed(1)+' per tim)');
+  var z=rows.filter(function(r){return r.k==0}).length;if(z)L.push(z+' tim tanpa kill');
+  return{html:'<ul>'+L.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>',text:'*RINGKASAN MATCH '+(cur+1)+' — '+TT()+' '+ALL.cur+' WIB*\n'+L.join('\n')}}
+function ocrPanel(){
+  var R=OCR,h='<div class="ocr" id="ocrp">',tot=R.teams.length,pl=0,ok=0,cf=[],chk2=0;
+  R.teams.forEach(function(t){pl+=t.players.length;t.players.forEach(function(p){if(p.k!==null&&p.k!==undefined)ok++});if(R.engine=='ocr')cf.push(t.conf);if(t.flags&&t.flags.length)chk2++});
+  var avg=cf.length?Math.round(cf.reduce(function(a,b){return a+b},0)/cf.length):null;
+  h+='<div><h3>Informasi yang terdeteksi</h3><div class="ocrinfo">Mesin: <b>'+(R.engine=='ai'?'AI vision':'OCR di browser')+'</b> · Gambar: <b>'+R.files+'</b> file'+(R.dim?' ('+R.dim+')':'')+'<br>Tim terdeteksi: <b>'+tot+'</b> · Pemain terbaca: <b>'+ok+'/'+pl+'</b>'+(R.cols?' · Kolom pemain: <b>'+R.cols+'</b>':'')+(avg!==null?' · Keyakinan angka: <b>'+avg+'%</b>':'')+'<br>'+(chk2?'<b style="color:var(--warn)">'+chk2+' tim perlu dicek</b> (ada angka kosong atau kurang yakin).':'Semua angka terbaca jelas.')+(R.warn&&R.warn.length?'<br>'+esc(R.warn.filter(function(x,i,a){return a.indexOf(x)==i}).join(' ')):'')+'<br>Peringkat dibaca dari urutan tim. Nama di baris adalah pemain kiri-atas tiap tim (perwakilan); ubah bila perlu.</div></div>';
+  h+='<div><h3>Hasil per tim</h3><div class="ocrh"><span>#</span><span>Perwakilan / tim</span><span>Kill</span><span style="text-align:right">Poin</span></div><div class="ocrt">';
+  var used={};R.teams.forEach(function(t){if(t.tid>0)used[t.tid]=(used[t.tid]||0)+1});
+  R.teams.forEach(function(t,i){
+    var dup=t.tid>0&&used[t.tid]>1,pick=t.tid==-2,bad=dup||pick||(t.flags&&t.flags.length);
+    h+='<div class="ocrr'+(bad?' bad':'')+'" data-orow="'+i+'"><input type="number" min="1" max="30" inputmode="numeric" data-op="'+i+'" value="'+t.place+'" aria-label="Peringkat"><input data-on="'+i+'" value="'+esc(t.rep||'')+'" placeholder="Nama perwakilan" aria-label="Nama perwakilan"><div class="tk" id="otk'+i+'">'+t.kills+'</div><div class="pt" id="opt'+i+'">'+ocrPts(t)+'</div>';
+    h+='<select data-os="'+i+'" style="grid-column:2/-1" class="'+(dup||pick?'dup':'')+'">'+(pick?'<option value="-2" selected>— Pilih tim —</option>':'')+'<option value="0"'+(t.tid==0?' selected':'')+'>Buat tim baru dari nama ini</option>'+S.teams.filter(function(x){return x.n.trim()}).map(function(x){return'<option value="'+x.id+'"'+(t.tid==x.id?' selected':'')+'>'+esc(x.n)+'</option>'}).join('')+'<option value="-1"'+(t.tid==-1?' selected':'')+'>Lewati baris ini</option></select>';
+    h+='<div class="pl">'+t.players.map(function(p,j){return'<input type="number" min="0" inputmode="numeric" data-ok="'+i+'_'+j+'" value="'+(p.k===null||p.k===undefined?'':p.k)+'" placeholder="?" title="'+esc(p.name||('Pemain '+(j+1)))+'" aria-label="Kill pemain '+(j+1)+'">'}).join('')+'</div>';
+    if(dup)h+='<div class="fl">Tim ini dipilih lebih dari sekali.</div>';
+    if(pick)h+='<div class="fl">Pilih tim untuk baris ini, atau pilih "Buat tim baru" / "Lewati".</div>';
+    if(t.flags&&t.flags.length)h+='<div class="fl">'+esc(t.flags.join('; '))+'</div>';
+    h+='</div>'});
+  h+='</div><div class="m">Empat kotak kecil = kill tiap pemain; total tim dan poin ikut berubah saat diedit. Poin = poin placement + kill × poin per kill.</div></div>';
+  h+='<div><h3>Ringkasan hasil pertandingan</h3><div class="ocrsum" id="ocrsum">'+ocrSum().html+'</div></div>';
+  h+='<div class="acts" style="margin:0"><button class="btn" id="ocrap" type="button">Terapkan ke Match '+(cur+1)+'</button><button class="btn ghost" id="ocrcp" type="button">Salin ringkasan</button><button class="btn ghost" id="ocrx" type="button">Tutup</button></div></div>';
+  return h}
+function ocrApply(){
+  var R=OCR;if(!R)return;var seen={},pl={},bad='';
+  R.teams.forEach(function(t){if(t.tid===-1)return;if(t.tid===-2){bad='Pilih tim untuk setiap baris dulu';return}if(t.tid>0){if(seen[t.tid])bad='Satu tim dipilih lebih dari sekali';seen[t.tid]=1}
+    if(!(t.place>=1&&t.place<=30))bad='Peringkat harus 1 sampai 30';if(pl[t.place])bad='Ada peringkat yang sama dua kali';pl[t.place]=1});
+  if(bad){toast(bad);return}
+  var res={},n=0,made=0,skip=0;
+  R.teams.forEach(function(t){if(t.tid===-1)return;var id=t.tid;
+    if(!id){var slot=S.teams.filter(function(x){return!x.n.trim()&&!seen[x.id]})[0];
+      if(!slot){if(S.teams.length>=30){skip++;return}growTeams(S.teams.length+1);slot=S.teams[S.teams.length-1]}
+      slot.n=(t.rep||'').trim()||('Tim '+t.place);seen[slot.id]=1;id=slot.id;made++}
+    else{var tm=S.teams.filter(function(x){return x.id==id})[0];if(tm&&!String(tm.k||'').trim()&&(t.rep||'').trim())tm.k=t.rep.trim()}  /* simpan nama perwakilan sebagai nickname agar scan berikutnya otomatis cocok */
+    res[id]={p:t.place,k:t.kills||0};n++});
+  S.res[cur]=res;OCR=null;scmsg='Hasil scan diterapkan ke Match '+(cur+1)+': '+n+' tim'+(made?', '+made+' tim baru dibuat':'')+(skip?', '+skip+' dilewati (slot penuh)':'')+'.';
+  save();render();toast('Hasil diterapkan ke Match '+(cur+1))}
+function setProg(l,f){f=Math.max(0,Math.min(1,f));var st=document.getElementById('scst'),b=document.getElementById('ocrbar');if(st)st.textContent=l+'… '+Math.round(f*100)+'%';if(b)b.style.width=Math.round(f*100)+'%'}
 async function scan(){
-  if(busy||!smp)return;
-  var f=document.getElementById('shots').files;
+  if(busy)return;var inp=document.getElementById('shots'),f=inp?Array.from(inp.files).slice(0,4):[];
   if(!f.length){toast('Pilih screenshot dulu');return}
-  var ts=S.teams.filter(function(t){return t.n.trim()});
-  if(!ts.length){toast('Isi nama tim dulu');return}
-  var st=document.getElementById('scst');busy=true;st.textContent='Membaca screenshot...';
-  var list=ts.map(function(t){return t.id+' | '+t.n+(t.k?' | '+t.k:'')}).join('\n');
-  var q='Ini screenshot hasil akhir match Free Fire mode squad. Baca setiap baris: peringkat tim dan total kill tim. Cocokkan nama tim dengan daftar berikut (format: id | nama | nickname). Nama di gambar bisa terpotong atau sedikit berbeda, pilih yang paling mirip dan lewati tim yang tidak ada di daftar.\n'+list+'\nBalas HANYA JSON array seperti [{"id":1,"place":1,"kills":5}]. Jika ada beberapa gambar, gabungkan barisnya tanpa duplikat. Jangan menebak angka yang tidak terbaca, lewati barisnya.';
+  busy=true;OCR=null;scmsg='Menyiapkan…';render();
+  var cfg=window.ZHXIN_CONFIG||{},all=[],warn=[],eng='ocr',cols=0,dim='',errs=[];
   try{
-    var out=await smp.json(q,{images:Array.from(f).slice(0,4),modelTier:'default'});
-    var n=0,max=S.teams.length;
-    (Array.isArray(out)?out:[]).forEach(function(r){
-      var t=ts.filter(function(x){return x.id==r.id})[0],p=Math.round(+r.place),k=Math.round(+r.kills);
-      if(!t||!(p>=1&&p<=max)||!(k>=0))return;
-      S.res[cur]=S.res[cur]||{};S.res[cur][t.id]={p:p,k:k};n++});
-    save();scmsg=n?n+' tim terisi dari screenshot. Periksa lagi sebelum menyimpan hasil.':'Tidak ada tim yang cocok. Cek nama tim di tab Tim atau isi manual.';
-    busy=false;render()
-  }catch(e){busy=false;scmsg=scerr(e&&e.code);var s2=document.getElementById('scst');if(s2)s2.textContent=scmsg}
-}
-document.addEventListener('click',function(e){if(e.target.id=='scan')scan()});
-try{claude.use('sample').then(function(s){smp=s;if(s&&tab=='match')render()},function(){})}catch(e){}
+    for(var i=0;i<f.length;i++){
+      var base=i/f.length,span=1/f.length,done=false;
+      if(cfg.aiOcrUrl&&sb&&ADM){
+        try{setProg('Membaca dengan AI',base+span*.3);
+          var ses0=await sb.auth.getSession(),tok=ses0&&ses0.data&&ses0.data.session&&ses0.data.session.access_token;
+          if(!tok)throw new Error('belum login');
+          var r0=await ZOCR.aiScan(f[i],{url:cfg.aiOcrUrl,token:tok,anon:cfg.supabaseAnonKey});
+          r0.teams.forEach(function(t){t.place=all.length+t.place});all=all.concat(r0.teams);eng='ai';dim=r0.dim;done=true}
+        catch(e){errs.push('AI tidak bisa dipakai ('+(e&&e.message||'error')+'), beralih ke OCR biasa.')}}
+      if(!done){
+        var en=await ZOCR.makeEngine(f[i],{onProgress:function(l,x){setProg(l,base+span*x)}});
+        try{var r=await ZOCR.analyze(en,{allNames:ocrAll,startPlace:all.length+1,onProgress:function(l,x){setProg(l,base+span*x)}});
+          if(r.error){errs.push(f[i].name+': '+r.error)}else{all=all.concat(r.teams);warn=warn.concat(r.warn||[]);cols=Math.max(cols,r.cols||0);dim=en.info.w+'×'+en.info.h}}
+        finally{en.close()}}}
+    if(!all.length){busy=false;scmsg=errs.join(' ')||'Tidak ada tim yang terbaca. Coba screenshot yang lebih jelas.';render();return}
+    OCR={m:cur,engine:eng,files:f.length,dim:dim,cols:cols,warn:warn.concat(errs),teams:all};ocrMatch(OCR);
+    busy=false;scmsg=all.length+' tim terbaca. Periksa hasilnya, lalu tekan Terapkan.';render()
+  }catch(e){busy=false;var m=e&&e.message||'';scmsg='Scan gagal'+(/script|Failed to fetch|NetworkError|load/i.test(m)?' (mesin OCR tidak bisa diunduh, cek koneksi internet)':'')+'. Coba lagi atau isi manual.';try{console.error(e)}catch(x){}render()}}
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('#mbtn');
+  if(a&&!waUrl(ALL.wa)){e.preventDefault();toast(ADM?'Isi link WhatsApp di tab Atur':'Kontak WhatsApp belum diatur');return}
+  var b=e.target.closest&&e.target.closest('button');if(!b)return;var i=b.id;
+  if(i=='animb'){ANIM=!ANIM;try{localStorage.setItem('zhxin-ft-anim',ANIM?'1':'0')}catch(x){}applyAnim();toast(ANIM?'Animasi dinyalakan':'Animasi dimatikan');return}
+  if(i=='bulkgo'){bulkApply();return}
+  if(i=='bulkclr'){if(!cconf){cconf=true;toast('Tekan sekali lagi untuk mengosongkan semua nama');setTimeout(function(){cconf=false},4000);return}
+    cconf=false;S.teams.forEach(function(t){t.n=''});save();render();toast('Semua nama tim dikosongkan');return}
+  if(i=='scan'){scan();return}
+  if(i=='ocrap'){ocrApply();return}
+  if(i=='ocrx'){OCR=null;scmsg='';render();return}
+  if(i=='ocrcp'&&OCR){var t=ocrSum().text;try{navigator.clipboard.writeText(t).then(function(){toast('Ringkasan disalin')},function(){toast('Gagal menyalin')})}catch(x){toast('Gagal menyalin')}return}
+});
+document.addEventListener('input',function(e){
+  var el=e.target,d=el.dataset;
+  if(el.id=='bulk'){bulkTxt=el.value;var pv=document.getElementById('bulkpv');if(pv)pv.innerHTML=bulkPv();return}
+  if(!OCR)return;
+  function upd(i){var t=OCR.teams[i];t.kills=t.players.reduce(function(s,p){return s+(p.k||0)},0);var a=document.getElementById('otk'+i),b=document.getElementById('opt'+i);if(a)a.textContent=t.kills;if(b)b.textContent=ocrPts(t);var sm=document.getElementById('ocrsum');if(sm)sm.innerHTML=ocrSum().html}
+  if(d.on!==undefined){OCR.teams[+d.on].rep=el.value;var sm=document.getElementById('ocrsum');if(sm)sm.innerHTML=ocrSum().html}
+  else if(d.op!==undefined){OCR.teams[+d.op].place=Math.round(+el.value)||0;upd(+d.op)}
+  else if(d.ok!==undefined){var q=d.ok.split('_'),t=OCR.teams[+q[0]],p=t.players[+q[1]];p.k=el.value===''?null:Math.max(0,Math.round(+el.value)||0);upd(+q[0])}
+});
+document.addEventListener('change',function(e){
+  var el=e.target;
+  if(el.id=='ocrall'){ocrAll=el.checked;return}
+  if(el.id=='bulkrep'){bulkRep=el.checked;return}
+  if(OCR&&el.dataset.os!==undefined){OCR.teams[+el.dataset.os].tid=+el.value;render()}
+});
+applyAnim();
 render();
