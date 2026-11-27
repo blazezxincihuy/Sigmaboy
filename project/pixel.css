@@ -11,7 +11,7 @@
 
 html{--grid:32px;min-height:100%;background-color:var(--bg);
   background-image:url("../images/bg-pixel.svg"),linear-gradient(rgba(255,255,255,.05) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.05) 2px,transparent 2px);
-  background-size:240px 240px,var(--grid) var(--grid),var(--grid) var(--grid);background-repeat:repeat;image-rendering:pixelated}
+  background-size:32px 32px,var(--grid) var(--grid),var(--grid) var(--grid);background-repeat:repeat;image-rendering:pixelated}
 body{font:400 16px/1.45 var(--fb);color:var(--ink);text-rendering:optimizeSpeed;
   background-color:var(--bg);
   background-image:linear-gradient(rgba(255,255,255,.035) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.035) 2px,transparent 2px);
