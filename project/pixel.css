@@ -161,3 +161,13 @@ option{background:var(--deep);color:var(--ink)}
 .heroimg::after{display:none}
 :root:root:root .tag,
 :root:root:root .hero .m{color:#f4e8c8;text-shadow:2px 2px 0 #000}
+/* hotbar copyright di bawah halaman */
+.hotbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;
+  min-height:44px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
+  background:var(--navy);border-top:4px solid var(--cr);box-shadow:inset 0 4px 0 rgba(255,255,255,.08),0 -6px 0 rgba(0,0,0,.35);
+  font-family:var(--fs);font-size:12px;letter-spacing:.08em;color:var(--cr);text-shadow:2px 2px 0 #000;user-select:none}
+.hotbar::before,.hotbar::after{content:"";width:8px;height:8px;background:var(--acc);box-shadow:0 0 0 2px #000;flex:none}
+.hotbar::after{background:var(--cyan)}
+.wrap{padding-bottom:120px}
+.mbtn{bottom:calc(64px + env(safe-area-inset-bottom,0px))!important}
+.toast{bottom:calc(64px + env(safe-area-inset-bottom,0px))!important}
