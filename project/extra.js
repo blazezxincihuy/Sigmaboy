@@ -30,20 +30,15 @@ function wkMain(v){
 /* ---- hitung klasemen mingguan dari semua sesi yang sudah disimpan admin ---- */
 function nk(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ')}
 function wkRows(){
-  var w=WK(),T={},p=w.pt,ks=Object.keys(w.sv).sort(function(a,b){return(w.sv[a].t||0)-(w.sv[b].t||0)});
+  var w=WK(),T={},ks=Object.keys(w.sv).sort(function(a,b){return(w.sv[a].t||0)-(w.sv[b].t||0)});
   ks.forEach(function(k){(w.sv[k].r||[]).forEach(function(x){
     var key=nk(x[0]);if(!key)return;
-    var t=T[key]||(T[key]={n:x[0],k:'',kill:0,reg:0,j:[0,0,0]});
-    t.n=x[0];if(x[1])t.k=x[1];t.kill+=x[2]||0;t.reg++;
+    var t=T[key]||(T[key]={n:x[0],k:'',kill:0,reg:0,j:[0,0,0],pts:0});
+    t.n=x[0];if(x[1])t.k=x[1];t.kill+=x[2]||0;t.reg++;t.pts+=x[4]||0;
     if(x[3]>=1&&x[3]<=3)t.j[x[3]-1]++})});
-  var rows=Object.keys(T).map(function(k){var t=T[k];t.pts=t.kill*(p.k||0)+t.reg*(p.r||0)+t.j[0]*(p.j1||0)+t.j[1]*(p.j2||0)+t.j[2]*(p.j3||0);return t});
+  var rows=Object.keys(T).map(function(k){return T[k]});
   rows.sort(function(a,b){return b.pts-a.pts||b.j[0]-a.j[0]||b.kill-a.kill||b.reg-a.reg||(a.n<b.n?-1:1)});
   return rows.slice(0,50)}
-function wkDate(d){var q=String(d||'').split('-');try{return new Date(+q[0],+q[1]-1,+q[2]).toLocaleDateString('id-ID',{day:'numeric',month:'short'})}catch(e){return d}}
-function wkPeriod(){
-  var w=WK(),ds=Object.keys(w.sv).map(function(k){return w.sv[k].d}).sort();
-  if(!ds.length)return'';
-  return ds[0]==ds[ds.length-1]?wkDate(ds[0]):wkDate(ds[0])+' – '+wkDate(ds[ds.length-1])}
 
 /* ---- tampilan publik ---- */
 function wkCard(){
@@ -64,17 +59,11 @@ function wkCard(){
 
 /* ---- panel admin (tab Atur) ---- */
 function wkAdmin(){
-  var w=WK(),p=w.pt;
+  var w=WK();
   var h='<div class="card"><h2>Klasemen mingguan</h2>';
   h+='<div class="acts" style="margin:0 0 10px"><button class="btn'+(w.on?'':' ghost')+'" id="wktog" type="button">Fitur: '+(w.on?'ON':'OFF')+'</button></div>';
   h+='<p class="m">ON = klasemen mingguan tampil di publik. OFF = disembunyikan, data tetap tersimpan.</p>';
-  h+='<div class="dh">Sistem poin</div><div class="wkp">'+
-    '<div><label>Per kill</label><input type="number" inputmode="numeric" id="wk_pk" value="'+(p.k||0)+'"></div>'+
-    '<div><label>Per daftar</label><input type="number" inputmode="numeric" id="wk_pr" value="'+(p.r||0)+'"></div>'+
-    '<div><label>Juara 1 (J1)</label><input type="number" inputmode="numeric" id="wk_p1" value="'+(p.j1||0)+'"></div>'+
-    '<div><label>Juara 2 (J2)</label><input type="number" inputmode="numeric" id="wk_p2" value="'+(p.j2||0)+'"></div>'+
-    '<div><label>Juara 3 (J3)</label><input type="number" inputmode="numeric" id="wk_p3" value="'+(p.j3||0)+'"></div></div>';
-  h+='<p class="m">Poin = kill × poin kill + daftar × poin daftar + J1/J2/J3 × poinnya. Perubahan langsung menghitung ulang semua data minggu ini.</p>';
+  h+='<p class="m">Poin mingguan = total poin klasemen harian dari semua sesi yang sudah disimpan.</p>';
   h+='<div class="dh">Note di bawah klasemen</div><textarea class="wkta" id="wk_note" rows="4" maxlength="400" placeholder="Tulis note untuk publik">'+esc(w.note||'')+'</textarea>';
   var ks=Object.keys(w.sv).sort(function(a,b){return(w.sv[b].t||0)-(w.sv[a].t||0)});
   h+='<div class="dh">Sesi yang sudah disimpan ('+ks.length+')</div>';
@@ -95,7 +84,7 @@ function wkSave(){
   if(!ADM)return;
   var rows=calc();
   if(!rows.some(function(r){return r.mp>0})){toast('Belum ada hasil match di sesi ini');return}
-  var R=rows.map(function(r,i){return[r.t.n.trim(),(r.t.k||'').trim(),r.k,(r.mp>0&&i<3)?i+1:0]});
+  var R=rows.map(function(r,i){return[r.t.n.trim(),(r.t.k||'').trim(),r.k,(r.mp>0&&i<3)?i+1:0,r.pts]});;
   var w=WK(),sig=JSON.stringify(R),dup=false;
   Object.keys(w.sv).forEach(function(k){var s=w.sv[k];if(s.s==ALL.cur&&JSON.stringify(s.r)==sig)dup=true});
   if(dup){toast('Sesi ini sudah tersimpan, data tidak berubah');return}
